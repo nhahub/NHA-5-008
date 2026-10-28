@@ -1,0 +1,15 @@
+.env
+.env.*
+!.env.example
+# Local API keys and service credentials
+*.key
+*.pem
+*.p12
+*.pfx
+credentials.json
+service-account*.json
+.venv/
+__pycache__/
+.pytest_cache/
+*.py[cod]
+*.log

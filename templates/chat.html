@@ -1,0 +1,2334 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kemet AI • Hieroglyphic Symbols Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+Egyptian+Hieroglyphs&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* User's Exact Color Palette */
+      --c-navy: #0A2947;        /* 0A2947 - Deep Pharaoh / Midnight Lapis Blue */
+      --c-papyrus: #F3E4C9;     /* F3E4C9 - Warm Papyrus / Sand Cream */
+      --c-limestone: #D3D4C0;   /* D3D4C0 - Desert Sage / Muted Limestone */
+      --c-terracotta: #8B5E3C;  /* 8B5E3C - Nile Terracotta / Cedar Bronze */
+
+      /* Derived shades */
+      --c-navy-dark: #05192d;
+      --c-navy-surface: #103357;
+      --c-navy-subtle: rgba(10, 41, 71, 0.08);
+      --c-navy-border: rgba(10, 41, 71, 0.18);
+
+      --c-papyrus-light: #fbf5eb;
+      --c-papyrus-card: #f9f0df;
+      --c-papyrus-dark: #e8d3b3;
+
+      --c-limestone-border: #b8ba9f;
+      --c-limestone-subtle: rgba(211, 212, 192, 0.35);
+
+      --c-terracotta-hover: #754f32;
+      --c-terracotta-subtle: rgba(139, 94, 60, 0.12);
+
+      --font-display: 'Cinzel', 'Times New Roman', serif;
+      --font-body: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      --font-glyph: 'Noto Sans Egyptian Hieroglyphs', 'Segoe UI Historic', 'Segoe UI Symbol', serif;
+
+      --shadow-sm: 0 2px 6px rgba(10, 41, 71, 0.08);
+      --shadow-md: 0 6px 18px rgba(10, 41, 71, 0.12);
+      --shadow-lg: 0 14px 34px rgba(10, 41, 71, 0.16);
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 20px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background-color: var(--c-papyrus);
+      color: var(--c-navy);
+      line-height: 1.55;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background-image: 
+        radial-gradient(var(--c-limestone-subtle) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(243, 228, 201, 0.95), rgba(243, 228, 201, 0.98));
+      background-size: 24px 24px, 100% 100%;
+    }
+
+    /* Top Navigation Header */
+    header {
+      background: linear-gradient(135deg, var(--c-navy-dark), var(--c-navy));
+      color: var(--c-papyrus);
+      padding: 0 24px;
+      box-shadow: var(--shadow-md);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 2px solid var(--c-terracotta);
+    }
+
+    .nav-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 72px;
+      gap: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .brand-icon {
+      font-family: var(--font-glyph);
+      font-size: 2.2rem;
+      background: var(--c-terracotta);
+      color: var(--c-papyrus);
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--c-limestone);
+      box-shadow: inset 0 0 8px rgba(0,0,0,0.3);
+      user-select: none;
+    }
+
+    .brand-text h1 {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      color: var(--c-papyrus);
+      line-height: 1.2;
+    }
+
+    .brand-text span {
+      font-size: 0.76rem;
+      color: var(--c-limestone);
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 6px;
+      background: rgba(5, 25, 45, 0.6);
+      padding: 5px;
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(211, 212, 192, 0.2);
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--c-limestone);
+      font-family: var(--font-body);
+      font-size: 0.88rem;
+      font-weight: 600;
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .tab-btn:hover {
+      color: var(--c-papyrus);
+      background: rgba(243, 228, 201, 0.1);
+    }
+
+    .tab-btn.active {
+      background: var(--c-terracotta);
+      color: var(--c-papyrus-light);
+      box-shadow: 0 2px 8px rgba(139, 94, 60, 0.4);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(10, 41, 71, 0.8);
+      padding: 6px 12px;
+      border-radius: 20px;
+      border: 1px solid var(--c-limestone-border);
+      font-size: 0.8rem;
+      color: var(--c-papyrus);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #4caf50;
+      box-shadow: 0 0 8px #4caf50;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 0.6; }
+      50% { opacity: 1; }
+      100% { opacity: 0.6; }
+    }
+
+    /* Main Container */
+    main {
+      max-width: 1400px;
+      width: 100%;
+      margin: 24px auto;
+      padding: 0 20px;
+      flex: 1;
+    }
+
+    .tab-pane {
+      display: none;
+      animation: fadeIn 0.25s ease-in-out;
+    }
+
+    .tab-pane.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Card styling */
+    .card {
+      background: var(--c-papyrus-light);
+      border: 1px solid var(--c-limestone);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 24px;
+      position: relative;
+    }
+
+    .card-title {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      color: var(--c-navy);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+      border-bottom: 2px solid var(--c-limestone);
+      padding-bottom: 12px;
+    }
+
+    .card-title .glyph-badge {
+      font-family: var(--font-glyph);
+      color: var(--c-terracotta);
+      font-size: 1.4rem;
+    }
+
+    .card-subtitle {
+      color: var(--c-terracotta);
+      font-size: 0.9rem;
+      margin-top: -6px;
+      margin-bottom: 16px;
+      font-weight: 500;
+    }
+
+    /* Grid Layouts */
+    .grid-2col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    @media (max-width: 960px) {
+      .grid-2col {
+        grid-template-columns: 1fr;
+      }
+      .tabs {
+        overflow-x: auto;
+      }
+    }
+
+    /* Button Styles */
+    .btn {
+      font-family: var(--font-body);
+      font-weight: 600;
+      font-size: 0.9rem;
+      padding: 10px 18px;
+      border-radius: var(--radius-sm);
+      border: 1px solid transparent;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: var(--c-terracotta);
+      color: var(--c-papyrus-light);
+      box-shadow: 0 2px 6px rgba(139, 94, 60, 0.3);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: var(--c-terracotta-hover);
+      box-shadow: 0 4px 12px rgba(139, 94, 60, 0.4);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: var(--c-navy);
+      color: var(--c-papyrus);
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background: var(--c-navy-surface);
+      transform: translateY(-1px);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--c-navy);
+      color: var(--c-navy);
+    }
+
+    .btn-outline:hover:not(:disabled) {
+      background: var(--c-navy-subtle);
+    }
+
+    .btn:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    /* Dropzone for Vision Detection */
+    .dropzone {
+      border: 2px dashed var(--c-terracotta);
+      background: var(--c-papyrus-card);
+      border-radius: var(--radius-md);
+      padding: 36px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+
+    .dropzone:hover, .dropzone.dragover {
+      background: #faeed7;
+      border-color: var(--c-navy);
+    }
+
+    .dropzone-glyph {
+      font-family: var(--font-glyph);
+      font-size: 3.5rem;
+      color: var(--c-terracotta);
+      margin-bottom: 12px;
+      line-height: 1;
+    }
+
+    .dropzone-title {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      color: var(--c-navy);
+      margin-bottom: 6px;
+    }
+
+    .dropzone-hint {
+      font-size: 0.85rem;
+      color: var(--c-terracotta);
+    }
+
+    .dropzone input[type="file"] {
+      display: none;
+    }
+
+    .sample-presets {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+      align-items: center;
+    }
+
+    .sample-label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--c-navy);
+    }
+
+    .preset-pill {
+      background: var(--c-limestone);
+      border: 1px solid var(--c-limestone-border);
+      color: var(--c-navy);
+      font-size: 0.8rem;
+      font-weight: 500;
+      padding: 5px 12px;
+      border-radius: 16px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.15s;
+    }
+
+    .preset-pill:hover {
+      background: var(--c-terracotta);
+      color: var(--c-papyrus);
+    }
+
+    /* Preview & Image Viewer */
+    .image-viewer-container {
+      margin-top: 20px;
+      background: var(--c-papyrus-card);
+      border: 1px solid var(--c-limestone);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+
+    .viewer-toolbar {
+      background: var(--c-navy);
+      color: var(--c-papyrus);
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .viewer-tabs {
+      display: flex;
+      gap: 6px;
+    }
+
+    .viewer-tab-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: var(--c-limestone);
+      font-size: 0.8rem;
+      padding: 4px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .viewer-tab-btn.active {
+      background: var(--c-terracotta);
+      color: var(--c-papyrus);
+    }
+
+    .viewer-viewport {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      min-height: 280px;
+      max-height: 480px;
+      background: #1c1a16;
+    }
+
+    .viewer-viewport img {
+      max-width: 100%;
+      max-height: 440px;
+      object-fit: contain;
+      border-radius: 6px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    }
+
+    /* Screening Status Banner */
+    .screening-card {
+      background: var(--c-papyrus-light);
+      border: 1px solid var(--c-limestone);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      margin-top: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .screening-info h4 {
+      font-size: 0.95rem;
+      color: var(--c-navy);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .screening-bar-wrap {
+      flex: 1;
+      max-width: 200px;
+      background: var(--c-limestone);
+      height: 10px;
+      border-radius: 5px;
+      overflow: hidden;
+      margin-top: 6px;
+    }
+
+    .screening-bar {
+      height: 100%;
+      background: var(--c-terracotta);
+      width: 0%;
+      transition: width 0.4s ease;
+    }
+
+    /* Detected Symbols Cards */
+    .symbols-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 16px;
+      max-height: 520px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .symbol-card {
+      background: var(--c-papyrus-light);
+      border: 1px solid var(--c-limestone);
+      border-left: 5px solid var(--c-terracotta);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      display: grid;
+      grid-template-columns: 60px 1fr auto;
+      align-items: center;
+      gap: 16px;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.15s;
+    }
+
+    .symbol-card:hover {
+      transform: translateX(3px);
+      border-color: var(--c-navy);
+    }
+
+    .symbol-glyph-box {
+      font-family: var(--font-glyph);
+      font-size: 2.5rem;
+      color: var(--c-navy);
+      background: var(--c-papyrus-card);
+      border: 1px solid var(--c-limestone);
+      border-radius: var(--radius-sm);
+      width: 58px;
+      height: 58px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    .symbol-info h5 {
+      font-size: 1rem;
+      color: var(--c-navy);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .symbol-code {
+      background: var(--c-navy);
+      color: var(--c-papyrus);
+      font-family: monospace;
+      font-size: 0.8rem;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .symbol-meta {
+      font-size: 0.8rem;
+      color: var(--c-terracotta);
+      margin-top: 3px;
+    }
+
+    .symbol-story {
+      font-size: 0.85rem;
+      color: #3b3528;
+      margin-top: 6px;
+      line-height: 1.4;
+    }
+
+    .symbol-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .action-icon-btn {
+      background: var(--c-limestone);
+      border: 1px solid var(--c-limestone-border);
+      color: var(--c-navy);
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .action-icon-btn:hover {
+      background: var(--c-terracotta);
+      color: var(--c-papyrus);
+    }
+
+    /* CHAT MODULE */
+    .chat-layout {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 20px;
+      height: 720px;
+    }
+
+    @media (max-width: 900px) {
+      .chat-layout {
+        grid-template-columns: 1fr;
+        height: auto;
+      }
+    }
+
+    .chat-sidebar {
+      background: var(--c-papyrus-light);
+      border: 1px solid var(--c-limestone);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .chat-sidebar h4 {
+      font-family: var(--font-display);
+      font-size: 0.95rem;
+      color: var(--c-navy);
+      border-bottom: 1px solid var(--c-limestone);
+      padding-bottom: 8px;
+    }
+
+    .tag-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .tag-chip {
+      background: var(--c-navy);
+      color: var(--c-papyrus);
+      font-size: 0.8rem;
+      padding: 4px 8px;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .tag-chip button {
+      background: none;
+      border: none;
+      color: var(--c-papyrus);
+      cursor: pointer;
+      font-size: 0.9rem;
+      line-height: 1;
+    }
+
+    .prompt-pill {
+      background: var(--c-papyrus-card);
+      border: 1px solid var(--c-limestone);
+      color: var(--c-navy);
+      padding: 8px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 0.82rem;
+      cursor: pointer;
+      text-align: left;
+      line-height: 1.3;
+      transition: background 0.15s;
+    }
+
+    .prompt-pill:hover {
+      background: var(--c-limestone);
+    }
+
+    .chat-main {
+      background: var(--c-papyrus-light);
+      border: 1px solid var(--c-limestone);
+      border-radius: var(--radius-lg);
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .chat-header {
+      background: var(--c-navy);
+      color: var(--c-papyrus);
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .chat-header h3 {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .chat-messages {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      background: var(--c-papyrus-light);
+    }
+
+    .chat-bubble {
+      max-width: 80%;
+      padding: 14px 18px;
+      border-radius: var(--radius-md);
+      font-size: 0.92rem;
+      line-height: 1.5;
+      position: relative;
+      word-break: break-word;
+    }
+
+    .chat-bubble.user {
+      align-self: flex-end;
+      background: var(--c-navy);
+      color: var(--c-papyrus);
+      border-bottom-right-radius: 2px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .chat-bubble.assistant {
+      align-self: flex-start;
+      background: #ffffff;
+      color: var(--c-navy);
+      border: 1px solid var(--c-limestone);
+      border-bottom-left-radius: 2px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .chat-bubble.system {
+      align-self: center;
+      background: var(--c-limestone);
+      color: var(--c-navy);
+      font-size: 0.8rem;
+      padding: 6px 14px;
+      border-radius: 20px;
+    }
+
+    .bubble-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 8px;
+      padding-top: 6px;
+      border-top: 1px solid rgba(211, 212, 192, 0.5);
+      font-size: 0.76rem;
+      color: var(--c-terracotta);
+    }
+
+    .chat-composer {
+      background: #ffffff;
+      border-top: 1px solid var(--c-limestone);
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .composer-row {
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+    }
+
+    .composer-input {
+      flex: 1;
+      border: 1px solid var(--c-limestone);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      font-family: inherit;
+      font-size: 0.92rem;
+      color: var(--c-navy);
+      background: var(--c-papyrus-light);
+      resize: none;
+      min-height: 48px;
+      max-height: 140px;
+      outline: none;
+    }
+
+    .composer-input:focus {
+      border-color: var(--c-terracotta);
+      box-shadow: 0 0 0 2px var(--c-terracotta-subtle);
+    }
+
+    .composer-tags-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .composer-tags-row input {
+      font-size: 0.82rem;
+      padding: 6px 10px;
+      border: 1px solid var(--c-limestone);
+      border-radius: var(--radius-sm);
+      background: var(--c-papyrus-light);
+      color: var(--c-navy);
+      outline: none;
+      width: 220px;
+    }
+
+    /* CATALOG / DICTIONARY MODULE */
+    .catalog-search-bar {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .catalog-input {
+      flex: 1;
+      min-width: 240px;
+      padding: 12px 18px;
+      border: 1px solid var(--c-limestone);
+      border-radius: var(--radius-md);
+      font-size: 0.95rem;
+      color: var(--c-navy);
+      background: #ffffff;
+      outline: none;
+    }
+
+    .catalog-input:focus {
+      border-color: var(--c-terracotta);
+      box-shadow: 0 0 0 2px var(--c-terracotta-subtle);
+    }
+
+    .category-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .cat-pill {
+      background: var(--c-papyrus-card);
+      border: 1px solid var(--c-limestone);
+      color: var(--c-navy);
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .cat-pill:hover, .cat-pill.active {
+      background: var(--c-navy);
+      color: var(--c-papyrus);
+      border-color: var(--c-navy);
+    }
+
+    .catalog-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 16px;
+      max-height: 640px;
+      overflow-y: auto;
+      padding-right: 6px;
+    }
+
+    .catalog-card {
+      background: #ffffff;
+      border: 1px solid var(--c-limestone);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .catalog-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--c-terracotta);
+    }
+
+    .catalog-glyph {
+      font-family: var(--font-glyph);
+      font-size: 3.2rem;
+      color: var(--c-navy);
+      margin-bottom: 8px;
+      line-height: 1;
+    }
+
+    .catalog-code {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--c-terracotta);
+      margin-bottom: 4px;
+    }
+
+    .catalog-desc {
+      font-size: 0.8rem;
+      color: #554f43;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      line-height: 1.4;
+    }
+
+    /* SPEECH & VOICE STUDIO */
+    .audio-player-widget {
+      background: var(--c-navy);
+      color: var(--c-papyrus);
+      padding: 14px 18px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-top: 10px;
+    }
+
+    .audio-play-btn {
+      background: var(--c-terracotta);
+      color: var(--c-papyrus);
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      transition: background 0.15s;
+    }
+
+    .audio-play-btn:hover {
+      background: var(--c-terracotta-hover);
+    }
+
+    .audio-wave-anim {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      height: 20px;
+    }
+
+    .wave-bar {
+      width: 3px;
+      height: 6px;
+      background: var(--c-limestone);
+      border-radius: 2px;
+      transition: height 0.15s ease;
+    }
+
+    .audio-wave-anim.playing .wave-bar {
+      animation: wave 1s infinite alternate ease-in-out;
+    }
+
+    .audio-wave-anim.playing .wave-bar:nth-child(2) { animation-delay: 0.2s; }
+    .audio-wave-anim.playing .wave-bar:nth-child(3) { animation-delay: 0.4s; }
+    .audio-wave-anim.playing .wave-bar:nth-child(4) { animation-delay: 0.1s; }
+    .audio-wave-anim.playing .wave-bar:nth-child(5) { animation-delay: 0.3s; }
+
+    @keyframes wave {
+      0% { height: 4px; }
+      100% { height: 20px; }
+    }
+
+    .audio-text-preview {
+      flex: 1;
+      font-size: 0.82rem;
+      color: var(--c-papyrus-card);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Modal for Symbol Inspection */
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(5, 25, 45, 0.7);
+      backdrop-filter: blur(4px);
+      z-index: 999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-content {
+      background: var(--c-papyrus-light);
+      border: 2px solid var(--c-terracotta);
+      border-radius: var(--radius-lg);
+      max-width: 600px;
+      width: 100%;
+      padding: 28px;
+      box-shadow: var(--shadow-lg);
+      position: relative;
+      animation: popIn 0.2s ease-out;
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0.94); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: transparent;
+      border: none;
+      font-size: 1.4rem;
+      cursor: pointer;
+      color: var(--c-navy);
+    }
+
+    .modal-glyph {
+      font-family: var(--font-glyph);
+      font-size: 5rem;
+      color: var(--c-navy);
+      text-align: center;
+      line-height: 1;
+      margin: 10px 0;
+    }
+
+    .modal-code-badge {
+      display: inline-block;
+      background: var(--c-navy);
+      color: var(--c-papyrus);
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      padding: 4px 16px;
+      border-radius: 20px;
+      margin-bottom: 14px;
+    }
+
+    .modal-story {
+      background: #ffffff;
+      border: 1px solid var(--c-limestone);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      margin: 14px 0;
+      font-size: 0.92rem;
+      line-height: 1.5;
+      color: var(--c-navy);
+    }
+
+    .modal-arabic {
+      background: #ffffff;
+      border: 1px solid var(--c-limestone);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      margin-bottom: 16px;
+      font-size: 0.95rem;
+      color: #4a3e2a;
+      direction: rtl;
+      text-align: right;
+    }
+
+    /* Toast notification */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .toast {
+      background: var(--c-navy);
+      color: var(--c-papyrus);
+      border-left: 4px solid var(--c-terracotta);
+      border-radius: var(--radius-sm);
+      padding: 12px 18px;
+      box-shadow: var(--shadow-md);
+      font-size: 0.88rem;
+      min-width: 260px;
+      animation: slideIn 0.25s ease-out;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    /* Footer */
+    footer {
+      background: var(--c-navy-dark);
+      color: var(--c-limestone);
+      border-top: 1px solid var(--c-terracotta);
+      padding: 20px;
+      text-align: center;
+      font-size: 0.82rem;
+      margin-top: auto;
+    }
+
+    footer a {
+      color: var(--c-papyrus);
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Header -->
+  <header>
+    <div class="nav-container">
+      <div class="brand">
+        <div class="brand-icon">𓋹</div>
+        <div class="brand-text">
+          <h1>KEMET STUDIO</h1>
+          <span>Hieroglyph CV & NLP Assistant</span>
+        </div>
+      </div>
+
+      <nav class="tabs">
+        <button class="tab-btn active" data-tab="detect">
+          <span>👁️</span> Visual Detector
+        </button>
+        <button class="tab-btn" data-tab="chat">
+          <span>💬</span> AI Scribe Chat
+        </button>
+        <button class="tab-btn" data-tab="catalog">
+          <span>📜</span> Symbol Explorer
+        </button>
+        <button class="tab-btn" data-tab="voice">
+          <span>🎙️</span> Voice Studio
+        </button>
+      </nav>
+
+      <div class="header-actions">
+        <div id="statusBadge" class="status-badge" title="FastAPI Health">
+          <span class="status-dot"></span>
+          <span id="statusText">Connecting…</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main View Area -->
+  <main>
+
+    <!-- TAB 1: VISUAL DETECTOR -->
+    <section id="pane-detect" class="tab-pane active">
+      <div class="grid-2col">
+        
+        <!-- Left: Upload & Processing -->
+        <div>
+          <div class="card">
+            <h2 class="card-title">
+              <span class="glyph-badge">𓁹</span> Image Screening & Detection
+            </h2>
+            <p class="card-subtitle">YOLO Detection Model with Zero-Shot CLIP Filtering</p>
+
+            <div id="dropzone" class="dropzone">
+              <div class="dropzone-glyph">𓊪</div>
+              <div class="dropzone-title">Drop Inscription Image Here</div>
+              <div class="dropzone-hint">Supports JPG, PNG, WebP up to 10 MB — or paste with Ctrl+V</div>
+              <input id="fileInput" type="file" accept="image/jpeg,image/png,image/webp">
+              <div style="margin-top: 16px;">
+                <button id="browseBtn" class="btn btn-primary" type="button">📁 Browse File</button>
+              </div>
+            </div>
+
+            <div class="sample-presets">
+              <span class="sample-label">Or test with presets:</span>
+              <button class="preset-pill" onclick="generateSampleStela('seated')">𓀀 Sample Inscription A</button>
+              <button class="preset-pill" onclick="generateSampleStela('ankh')">𓋹 Royal Cartouche</button>
+              <button class="preset-pill" onclick="generateSampleStela('birds')">𓅓 Temple Offering</button>
+            </div>
+
+            <div id="fileInfo" style="display: none; margin-top: 16px; padding: 12px; background: var(--c-papyrus-card); border-radius: var(--radius-sm); border: 1px solid var(--c-limestone);">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span id="fileName" style="font-weight: 600; font-size: 0.9rem;">filename.jpg</span>
+                <span id="fileSize" style="font-size: 0.8rem; color: var(--c-terracotta);">0 KB</span>
+              </div>
+              <div style="margin-top: 10px; display: flex; gap: 8px;">
+                <button id="runDetectBtn" class="btn btn-primary" style="flex: 1;" type="button">🚀 Analyze Hieroglyphs</button>
+                <button id="clearFileBtn" class="btn btn-outline" type="button">✕ Reset</button>
+              </div>
+            </div>
+
+            <div id="screeningBanner" class="screening-card" style="display: none;">
+              <div class="screening-info">
+                <h4 id="screeningTitle">Hieroglyphs Verified</h4>
+                <div style="font-size: 0.8rem; color: var(--c-terracotta);" id="screeningDetail">CLIP Screening Confidence: 94%</div>
+                <div class="screening-bar-wrap">
+                  <div id="screeningBar" class="screening-bar"></div>
+                </div>
+              </div>
+              <div id="screeningIcon" style="font-size: 2rem;">🏛️</div>
+            </div>
+
+            <div id="detectionWarnings" style="margin-top: 12px; display: none;"></div>
+          </div>
+        </div>
+
+        <!-- Right: Detection Viewers & Symbols -->
+        <div>
+          <div class="card">
+            <h2 class="card-title">
+              <span class="glyph-badge">𓇳</span> Inspection & Semantic Analysis
+            </h2>
+            <p class="card-subtitle">Annotated Bounding Boxes & Extracted Gardiner Signs</p>
+
+            <div id="viewerBox" class="image-viewer-container" style="display: none;">
+              <div class="viewer-toolbar">
+                <div class="viewer-tabs">
+                  <button id="tabAnnotated" class="viewer-tab-btn active" onclick="switchImageView('annotated')">Detections</button>
+                  <button id="tabOriginal" class="viewer-tab-btn" onclick="switchImageView('original')">Original</button>
+                </div>
+                <span id="detectionCountBadge" style="font-size: 0.8rem; font-weight: 600;">0 Symbols Found</span>
+              </div>
+              <div class="viewer-viewport">
+                <img id="viewerImage" src="" alt="Hieroglyph View">
+              </div>
+            </div>
+
+            <div id="emptyViewerState" style="text-align: center; padding: 60px 20px; color: var(--c-terracotta);">
+              <div style="font-family: var(--font-glyph); font-size: 4rem; opacity: 0.4;">𓀀 𓋹 𓊪</div>
+              <p style="margin-top: 12px; font-weight: 500;">Upload an image or pick a preset to view detector annotations and Gardiner interpretations.</p>
+            </div>
+
+            <div id="detectedSymbolsSection" style="display: none; margin-top: 20px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <h3 style="font-family: var(--font-display); font-size: 1.05rem;">Detected Gardiner Signs</h3>
+                <button class="btn btn-secondary" style="font-size: 0.78rem; padding: 6px 12px;" onclick="sendAllDetectionsToChat()">
+                  💬 Send All to Chat
+                </button>
+              </div>
+              <div id="symbolsList" class="symbols-list"></div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- TAB 2: AI SCRIBE CHAT -->
+    <section id="pane-chat" class="tab-pane">
+      <div class="chat-layout">
+        
+        <!-- Chat Context Sidebar -->
+        <aside class="chat-sidebar">
+          <div>
+            <h4>Attached Glyph Context</h4>
+            <p style="font-size: 0.78rem; color: var(--c-terracotta); margin-top: 4px; margin-bottom: 8px;">
+              Codes passed to Groq for ground-truth facts:
+            </p>
+            <div id="activeTagsContainer" class="tag-container">
+              <span style="font-size: 0.8rem; color: #888;">No active codes attached</span>
+            </div>
+            <div style="display: flex; gap: 6px; margin-top: 10px;">
+              <input id="addTagInput" placeholder="Add code: A1, S34" style="flex: 1; padding: 6px 10px; border: 1px solid var(--c-limestone); border-radius: 4px; font-size: 0.8rem;">
+              <button class="btn btn-outline" style="padding: 6px 10px; font-size: 0.8rem;" onclick="addManualTag()">Add</button>
+            </div>
+          </div>
+
+          <div>
+            <h4>Image Context</h4>
+            <div id="chatImageContextStatus" style="font-size: 0.8rem; background: var(--c-papyrus-card); padding: 8px; border-radius: 4px; border: 1px solid var(--c-limestone);">
+              No detector results attached yet.
+            </div>
+          </div>
+
+          <div>
+            <h4>Inquiry Starters</h4>
+            <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 8px;">
+              <button class="prompt-pill" onclick="sendQuickPrompt('What does the Ankh symbol 𓋹 mean in Ancient Egyptian religion?')">
+                ✨ What does the Ankh (S34) mean?
+              </button>
+              <button class="prompt-pill" onclick="sendQuickPrompt('Explain the difference between ideograms, phonograms, and determinatives.')">
+                📖 Ideograms vs. Determinatives
+              </button>
+              <button class="prompt-pill" onclick="sendQuickPrompt('Explain Gardiner category A: Men and their occupations.')">
+                👤 Gardiner Category A (Men)
+              </button>
+              <button class="prompt-pill" onclick="sendQuickPrompt('How did Ancient Egyptians read inscriptions: left-to-right or right-to-left?')">
+                🧭 Direction of reading hieroglyphs
+              </button>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Main Chat Area -->
+        <div class="chat-main">
+          <div class="chat-header">
+            <h3><span>𓁐</span> Ancient Egyptian AI Scribe</h3>
+            <button class="btn btn-outline" style="color: var(--c-papyrus); border-color: rgba(255,255,255,0.3); font-size: 0.8rem; padding: 5px 12px;" onclick="resetChat()">
+              ↺ New Session
+            </button>
+          </div>
+
+          <div id="chatMessages" class="chat-messages">
+            <div class="chat-bubble system">
+              Welcome to the Hieroglyphic Assistant. Ask in English or Arabic, attach Gardiner codes, or paste an inscription image.
+            </div>
+          </div>
+
+          <form id="chatForm" class="chat-composer">
+            <div class="composer-row">
+              <textarea id="chatInput" class="composer-input" rows="2" placeholder="Ask about ancient signs, meanings, grammar, or paste an image with Ctrl+V…"></textarea>
+              <button id="sendChatBtn" class="btn btn-primary" type="submit" style="height: 48px; padding: 0 20px;">
+                Send ➔
+              </button>
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- TAB 3: SYMBOL EXPLORER -->
+    <section id="pane-catalog" class="tab-pane">
+      <div class="card">
+        <h2 class="card-title">
+          <span class="glyph-badge">𓏞</span> Hieroglyphic Signary & Stories Catalog
+        </h2>
+        <p class="card-subtitle">Browse and inspect 179 curated semantic entries with English stories, phonetic descriptions, and Arabic translations</p>
+
+        <div class="catalog-search-bar">
+          <input id="catalogSearch" class="catalog-input" placeholder="🔍 Search by Gardiner code (e.g. A1, S34), sign (𓋹), or keyword (man, woman, sun, bird, water)…">
+          <button class="btn btn-primary" onclick="filterCatalog()">Search</button>
+        </div>
+
+        <div id="categoryPills" class="category-pills">
+          <button class="cat-pill active" onclick="setCategoryFilter('all')">All Signs (179)</button>
+          <button class="cat-pill" onclick="setCategoryFilter('A')">A • Men</button>
+          <button class="cat-pill" onclick="setCategoryFilter('B')">B • Women</button>
+          <button class="cat-pill" onclick="setCategoryFilter('C')">C • Deities</button>
+          <button class="cat-pill" onclick="setCategoryFilter('D')">D • Human Body</button>
+          <button class="cat-pill" onclick="setCategoryFilter('E')">E • Mammals</button>
+          <button class="cat-pill" onclick="setCategoryFilter('G')">G • Birds</button>
+          <button class="cat-pill" onclick="setCategoryFilter('N')">N • Sky & Earth</button>
+          <button class="cat-pill" onclick="setCategoryFilter('S')">S • Crowns & Regalia</button>
+          <button class="cat-pill" onclick="setCategoryFilter('V')">V • Ropes & Vessels</button>
+        </div>
+
+        <div id="catalogGrid" class="catalog-grid">
+          <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--c-terracotta);">
+            Loading hieroglyphs catalog…
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: VOICE & PRONUNCIATION STUDIO -->
+    <section id="pane-voice" class="tab-pane">
+      <div class="grid-2col">
+        
+        <!-- Symbol Story Narrator -->
+        <div class="card">
+          <h2 class="card-title">
+            <span class="glyph-badge">𓂋</span> Hieroglyph Audio Storyteller
+          </h2>
+          <p class="card-subtitle">Synthesized speech & bilingual translation for any Gardiner sign</p>
+
+          <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+            <input id="voiceLookupInput" class="catalog-input" placeholder="Enter Gardiner code or glyph: A1, S34, 𓋹" value="A1">
+            <button class="btn btn-primary" onclick="fetchStoryAudio()">🔊 Play Story</button>
+          </div>
+
+          <div id="storyResultBox" style="background: #ffffff; border: 1px solid var(--c-limestone); border-radius: var(--radius-md); padding: 18px; display: none;">
+            <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 12px;">
+              <div id="storyGlyphDisplay" style="font-family: var(--font-glyph); font-size: 3.5rem; line-height: 1; color: var(--c-navy);">𓀀</div>
+              <div>
+                <h3 id="storyCodeDisplay" style="font-family: var(--font-display); color: var(--c-terracotta);">A1</h3>
+                <span style="font-size: 0.8rem; color: #777;">Semantic story transcription</span>
+              </div>
+            </div>
+
+            <div id="storyAudioPlayer"></div>
+
+            <div style="margin-top: 14px;">
+              <h4 style="font-size: 0.85rem; color: var(--c-navy); margin-bottom: 4px;">English Transcription</h4>
+              <p id="storyTranscriptionText" style="font-size: 0.88rem; color: #3b3528; line-height: 1.4; background: var(--c-papyrus-light); padding: 10px; border-radius: 4px;"></p>
+            </div>
+
+            <div style="margin-top: 14px;">
+              <h4 style="font-size: 0.85rem; color: var(--c-navy); margin-bottom: 4px;">Arabic Translation (الترجمة العربية)</h4>
+              <p id="storyArabicText" style="font-size: 0.92rem; color: #3b3528; line-height: 1.5; background: var(--c-papyrus-light); padding: 10px; border-radius: 4px; direction: rtl; text-align: right;"></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Custom Speech Synthesizer -->
+        <div class="card">
+          <h2 class="card-title">
+            <span class="glyph-badge">𓁿</span> Kokoro-82M Speech Synthesizer
+          </h2>
+          <p class="card-subtitle">Generate high-fidelity audio narration for any hieroglyphic text</p>
+
+          <textarea id="ttsTextInput" class="composer-input" style="width: 100%; min-height: 120px;" placeholder="Type any educational text or story about Ancient Egypt to convert to speech…">The Eye of Horus, or Wedjat, was an ancient Egyptian symbol of protection, royal power, and good health.</textarea>
+
+          <div style="margin-top: 14px; display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 0.8rem; color: var(--c-terracotta);">Voice: Kokoro af_heart (24 kHz)</span>
+            <button id="ttsSynthesizeBtn" class="btn btn-primary" onclick="synthesizeCustomSpeech()">
+              🎙️ Synthesize Speech
+            </button>
+          </div>
+
+          <div id="ttsPlayerContainer" style="margin-top: 20px;"></div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Modal for Inspecting Glyph from Catalog -->
+  <div id="symbolModal" class="modal-backdrop">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeSymbolModal()">✕</button>
+      <div style="text-align: center;">
+        <div id="modalGlyph" class="modal-glyph">𓀀</div>
+        <div id="modalCode" class="modal-code-badge">A1</div>
+      </div>
+      <div id="modalStory" class="modal-story"></div>
+      <div id="modalArabic" class="modal-arabic" style="display: none;"></div>
+      <div id="modalAudioPlayer"></div>
+      <div style="display: flex; gap: 10px; margin-top: 18px;">
+        <button class="btn btn-primary" style="flex: 1;" onclick="sendModalGlyphToChat()">💬 Inquire in Chat</button>
+        <button class="btn btn-outline" onclick="copyModalCode()">📋 Copy Code</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Stack -->
+  <div id="toastStack" class="toast-container"></div>
+
+  <!-- Footer -->
+  <footer>
+    <div style="max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+      <div>
+        <strong>Kemet Hieroglyphic Studio</strong> • DEPI Graduation Project • CV & NLP Pipeline
+      </div>
+      <div>
+        <a href="/docs" target="_blank" style="margin-right: 14px;">📖 API Docs (FastAPI)</a>
+        <a href="/health" target="_blank">🩺 Health Check</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    /* =====================================================================
+       GLOBAL STATE & CONFIGURATION
+       ===================================================================== */
+    const state = {
+      detectedCodes: [],
+      imageContext: '',
+      currentImageFile: null,
+      annotatedImageDataUrl: null,
+      originalImageDataUrl: null,
+      chatHistory: [],
+      storiesCatalog: [],
+      activeCategory: 'all',
+      currentAudio: null
+    };
+
+    /* DOM references */
+    const tabs = document.querySelectorAll('.tab-btn');
+    const tabPanes = document.querySelectorAll('.tab-pane');
+    const dropzone = document.getElementById('dropzone');
+    const fileInput = document.getElementById('fileInput');
+    const fileInfo = document.getElementById('fileInfo');
+    const fileName = document.getElementById('fileName');
+    const fileSize = document.getElementById('fileSize');
+    const runDetectBtn = document.getElementById('runDetectBtn');
+    const clearFileBtn = document.getElementById('clearFileBtn');
+    const screeningBanner = document.getElementById('screeningBanner');
+    const screeningTitle = document.getElementById('screeningTitle');
+    const screeningDetail = document.getElementById('screeningDetail');
+    const screeningBar = document.getElementById('screeningBar');
+    const screeningIcon = document.getElementById('screeningIcon');
+    const viewerBox = document.getElementById('viewerBox');
+    const viewerImage = document.getElementById('viewerImage');
+    const emptyViewerState = document.getElementById('emptyViewerState');
+    const detectedSymbolsSection = document.getElementById('detectedSymbolsSection');
+    const symbolsList = document.getElementById('symbolsList');
+    const detectionCountBadge = document.getElementById('detectionCountBadge');
+    const detectionWarnings = document.getElementById('detectionWarnings');
+
+    /* Chat DOM */
+    const chatMessages = document.getElementById('chatMessages');
+    const chatForm = document.getElementById('chatForm');
+    const chatInput = document.getElementById('chatInput');
+    const activeTagsContainer = document.getElementById('activeTagsContainer');
+    const addTagInput = document.getElementById('addTagInput');
+    const chatImageContextStatus = document.getElementById('chatImageContextStatus');
+
+    /* =====================================================================
+       INITIALIZATION & HEALTH
+       ===================================================================== */
+    window.addEventListener('DOMContentLoaded', () => {
+      checkHealth();
+      loadStoriesCatalog();
+      setupTabs();
+      setupDragAndDrop();
+      setupGlobalPaste();
+    });
+
+    async function checkHealth() {
+      const badge = document.getElementById('statusBadge');
+      const text = document.getElementById('statusText');
+      try {
+        const res = await fetch('/health');
+        if (!res.ok) throw new Error();
+        const data = await res.json();
+        text.textContent = `Online • ${data.story_records} Signs`;
+        badge.style.borderColor = 'rgba(76, 175, 80, 0.4)';
+      } catch (e) {
+        text.textContent = 'Server Offline';
+        badge.querySelector('.status-dot').style.background = '#e53935';
+        badge.querySelector('.status-dot').style.boxShadow = '0 0 8px #e53935';
+      }
+    }
+
+    async function loadStoriesCatalog() {
+      try {
+        const res = await fetch('/api/stories');
+        if (!res.ok) throw new Error();
+        state.storiesCatalog = await res.json();
+        renderCatalog();
+      } catch (e) {
+        console.warn('Could not load stories catalog from /api/stories', e);
+      }
+    }
+
+    /* =====================================================================
+       TABS NAVIGATION
+       ===================================================================== */
+    function setupTabs() {
+      tabs.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const target = btn.dataset.tab;
+          switchTab(target);
+        });
+      });
+    }
+
+    function switchTab(tabId) {
+      tabs.forEach(b => b.classList.toggle('active', b.dataset.tab === tabId));
+      tabPanes.forEach(pane => {
+        pane.classList.toggle('active', pane.id === `pane-${tabId}`);
+      });
+    }
+
+    /* =====================================================================
+       TOAST NOTIFICATIONS
+       ===================================================================== */
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toastStack');
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.innerHTML = `<span>${message}</span><button style="background:none;border:none;color:inherit;cursor:pointer;font-size:1.1rem;" onclick="this.parentElement.remove()">✕</button>`;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.transition = 'opacity 0.3s';
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+      }, 4000);
+    }
+
+    /* =====================================================================
+       AUDIO CONTROLLER (Kokoro Server -> Web Speech Fallback)
+       ===================================================================== */
+    function stopCurrentAudio() {
+      if (state.currentAudio) {
+        state.currentAudio.pause();
+        state.currentAudio = null;
+      }
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+      document.querySelectorAll('.audio-wave-anim').forEach(el => el.classList.remove('playing'));
+      document.querySelectorAll('.audio-play-btn').forEach(btn => btn.innerHTML = '▶');
+    }
+
+    function playBase64Audio(base64Wav, container, previewText = '') {
+      stopCurrentAudio();
+      const audio = new Audio('data:audio/wav;base64,' + base64Wav);
+      state.currentAudio = audio;
+
+      const widget = renderAudioWidget(container, previewText);
+      const playBtn = widget.querySelector('.audio-play-btn');
+      const wave = widget.querySelector('.audio-wave-anim');
+
+      playBtn.onclick = () => {
+        if (audio.paused) {
+          audio.play();
+          playBtn.innerHTML = '⏸';
+          wave.classList.add('playing');
+        } else {
+          audio.pause();
+          playBtn.innerHTML = '▶';
+          wave.classList.remove('playing');
+        }
+      };
+
+      audio.onplay = () => {
+        playBtn.innerHTML = '⏸';
+        wave.classList.add('playing');
+      };
+      audio.onended = () => {
+        playBtn.innerHTML = '▶';
+        wave.classList.remove('playing');
+      };
+
+      audio.play().catch(e => console.log('Audio autoplay prevented:', e));
+    }
+
+    function fallbackSpeak(text, container) {
+      if (!('speechSynthesis' in window)) {
+        showToast('Speech synthesis is not supported on this browser.', 'warning');
+        return;
+      }
+      stopCurrentAudio();
+      const widget = renderAudioWidget(container, text + ' (Browser Voice)');
+      const playBtn = widget.querySelector('.audio-play-btn');
+      const wave = widget.querySelector('.audio-wave-anim');
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'en-US';
+      utterance.rate = 0.95;
+
+      utterance.onstart = () => {
+        playBtn.innerHTML = '⏸';
+        wave.classList.add('playing');
+      };
+      utterance.onend = () => {
+        playBtn.innerHTML = '▶';
+        wave.classList.remove('playing');
+      };
+
+      playBtn.onclick = () => {
+        if (window.speechSynthesis.speaking) {
+          window.speechSynthesis.cancel();
+          playBtn.innerHTML = '▶';
+          wave.classList.remove('playing');
+        } else {
+          window.speechSynthesis.speak(utterance);
+        }
+      };
+
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function renderAudioWidget(container, previewText) {
+      container.innerHTML = `
+        <div class="audio-player-widget">
+          <button class="audio-play-btn">▶</button>
+          <div class="audio-wave-anim">
+            <span class="wave-bar"></span>
+            <span class="wave-bar"></span>
+            <span class="wave-bar"></span>
+            <span class="wave-bar"></span>
+            <span class="wave-bar"></span>
+          </div>
+          <div class="audio-text-preview">${escapeHtml(previewText || 'Hieroglyphic Pronunciation')}</div>
+        </div>
+      `;
+      return container.querySelector('.audio-player-widget');
+    }
+
+    /* =====================================================================
+       VISUAL DETECTOR (TAB 1)
+       ===================================================================== */
+    function setupDragAndDrop() {
+      ['dragenter', 'dragover'].forEach(name => {
+        dropzone.addEventListener(name, (e) => {
+          e.preventDefault();
+          dropzone.classList.add('dragover');
+        });
+      });
+      ['dragleave', 'drop'].forEach(name => {
+        dropzone.addEventListener(name, (e) => {
+          e.preventDefault();
+          dropzone.classList.remove('dragover');
+        });
+      });
+      dropzone.addEventListener('drop', (e) => {
+        const files = e.dataTransfer.files;
+        if (files && files[0]) handleSelectedFile(files[0]);
+      });
+      document.getElementById('browseBtn').addEventListener('click', (e) => {
+        e.stopPropagation();
+        fileInput.click();
+      });
+      fileInput.addEventListener('change', () => {
+        if (fileInput.files && fileInput.files[0]) handleSelectedFile(fileInput.files[0]);
+      });
+      clearFileBtn.addEventListener('click', resetDetector);
+      runDetectBtn.addEventListener('click', executeDetection);
+    }
+
+    function setupGlobalPaste() {
+      window.addEventListener('paste', (e) => {
+        const items = e.clipboardData.items;
+        for (let i = 0; i < items.length; i++) {
+          if (items[i].type.startsWith('image/')) {
+            const file = items[i].getAsFile();
+            handleSelectedFile(file);
+            switchTab('detect');
+            showToast('Image pasted from clipboard!', 'info');
+            break;
+          }
+        }
+      });
+    }
+
+    function handleSelectedFile(file) {
+      if (!file || !['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+        showToast('Please select a JPG, PNG, or WebP image.', 'warning');
+        return;
+      }
+      if (file.size > 10 * 1024 * 1024) {
+        showToast('Image size exceeds 10 MB limit.', 'warning');
+        return;
+      }
+
+      state.currentImageFile = file;
+      fileName.textContent = file.name || 'Pasted-Hieroglyph.png';
+      fileSize.textContent = (file.size / 1024).toFixed(1) + ' KB';
+      fileInfo.style.display = 'block';
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        state.originalImageDataUrl = e.target.result;
+        viewerImage.src = e.target.result;
+        viewerBox.style.display = 'block';
+        emptyViewerState.style.display = 'none';
+        document.getElementById('tabOriginal').classList.add('active');
+        document.getElementById('tabAnnotated').classList.remove('active');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function resetDetector() {
+      state.currentImageFile = null;
+      state.annotatedImageDataUrl = null;
+      state.originalImageDataUrl = null;
+      state.detectedCodes = [];
+      fileInput.value = '';
+      fileInfo.style.display = 'none';
+      viewerBox.style.display = 'none';
+      emptyViewerState.style.display = 'block';
+      screeningBanner.style.display = 'none';
+      detectedSymbolsSection.style.display = 'none';
+      detectionWarnings.style.display = 'none';
+      symbolsList.innerHTML = '';
+      updateActiveTagsUI();
+    }
+
+    async function executeDetection() {
+      if (!state.currentImageFile) return;
+
+      runDetectBtn.disabled = true;
+      runDetectBtn.textContent = '⏳ Scanning & Detecting…';
+      screeningBanner.style.display = 'none';
+      detectionWarnings.style.display = 'none';
+
+      try {
+        const formData = new FormData();
+        formData.append('file', state.currentImageFile, state.currentImageFile.name || 'image.png');
+
+        const response = await fetch('/detect', {
+          method: 'POST',
+          body: formData
+        });
+
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.detail || 'Hieroglyph detection failed.');
+
+        // 1. Handle CLIP Screening Gate
+        screeningBanner.style.display = 'flex';
+        const screeningPct = Math.round((data.screening_confidence || 0) * 100);
+        screeningBar.style.width = screeningPct + '%';
+
+        if (data.is_hieroglyph) {
+          screeningTitle.innerHTML = '✅ Ancient Hieroglyphs Identified';
+          screeningDetail.textContent = `CLIP Gate Confidence: ${screeningPct}% — Inscription characteristics verified.`;
+          screeningIcon.textContent = '🏛️';
+          screeningBanner.style.borderColor = 'var(--c-terracotta)';
+        } else {
+          screeningTitle.innerHTML = '⚠️ Image Screening Rejected';
+          screeningDetail.textContent = `CLIP Gate Confidence: ${screeningPct}% — Image does not appear to be ancient Egyptian hieroglyphs.`;
+          screeningIcon.textContent = '❌';
+          screeningBanner.style.borderColor = '#c62828';
+        }
+
+        // 2. Handle Annotated Image
+        if (data.annotated_image) {
+          state.annotatedImageDataUrl = 'data:image/jpeg;base64,' + data.annotated_image;
+          viewerImage.src = state.annotatedImageDataUrl;
+          document.getElementById('tabAnnotated').classList.add('active');
+          document.getElementById('tabOriginal').classList.remove('active');
+        }
+
+        // 3. Handle Detected Symbols
+        symbolsList.innerHTML = '';
+        state.detectedCodes = [];
+
+        if (data.detections && data.detections.length > 0) {
+          state.detectedCodes = data.detections.map(d => d.code);
+          detectionCountBadge.textContent = `${data.detections.length} Symbol${data.detections.length > 1 ? 's' : ''} Detected`;
+          detectedSymbolsSection.style.display = 'block';
+
+          // Format image context for chatbot
+          state.imageContext = data.detections.map(d => 
+            `${d.label}: ${d.code} (conf ${d.confidence.toFixed(2)}${d.uncertain ? ', uncertain' : ''})`
+          ).join('; ');
+          chatImageContextStatus.textContent = state.imageContext;
+
+          data.detections.forEach(det => {
+            const card = document.createElement('div');
+            card.className = 'symbol-card';
+            const glyphChar = getGlyphForCode(det.code) || '𓀀';
+            const pct = Math.round(det.confidence * 100);
+
+            card.innerHTML = `
+              <div class="symbol-glyph-box">${glyphChar}</div>
+              <div class="symbol-info">
+                <h5>${escapeHtml(det.label)} <span class="symbol-code">${escapeHtml(det.code)}</span></h5>
+                <div class="symbol-meta">
+                  Confidence: <strong>${pct}%</strong>
+                  ${det.uncertain ? '<span style="color:#d32f2f; margin-left:6px;">⚠️ Uncertain</span>' : ''}
+                  • Box: [${det.bbox.x1}, ${det.bbox.y1}, ${det.bbox.x2}, ${det.bbox.y2}]
+                </div>
+                <div class="symbol-story">${escapeHtml(det.story || 'No local story registered in catalog.')}</div>
+              </div>
+              <div class="symbol-actions">
+                <button class="action-icon-btn" onclick="playStoryAudioForCode('${escapeHtml(det.code)}')">🔊 Listen</button>
+                <button class="action-icon-btn" onclick="askChatAboutGlyph('${escapeHtml(det.code)}')">💬 Ask AI</button>
+              </div>
+            `;
+            symbolsList.appendChild(card);
+          });
+
+          updateActiveTagsUI();
+          showToast(`Detected ${data.detections.length} hieroglyphic symbols!`, 'info');
+        } else {
+          detectionCountBadge.textContent = '0 Symbols';
+          detectedSymbolsSection.style.display = 'none';
+        }
+
+        // 4. Handle Warnings
+        if (data.warnings && data.warnings.length > 0) {
+          detectionWarnings.style.display = 'block';
+          detectionWarnings.innerHTML = data.warnings.map(w => 
+            `<div style="font-size:0.8rem; color:var(--c-terracotta); margin-top:4px;">⚠️ ${escapeHtml(w)}</div>`
+          ).join('');
+        }
+
+      } catch (err) {
+        showToast(err.message, 'warning');
+      } finally {
+        runDetectBtn.disabled = false;
+        runDetectBtn.textContent = '🚀 Analyze Hieroglyphs';
+      }
+    }
+
+    function switchImageView(view) {
+      if (view === 'annotated' && state.annotatedImageDataUrl) {
+        viewerImage.src = state.annotatedImageDataUrl;
+        document.getElementById('tabAnnotated').classList.add('active');
+        document.getElementById('tabOriginal').classList.remove('active');
+      } else if (view === 'original' && state.originalImageDataUrl) {
+        viewerImage.src = state.originalImageDataUrl;
+        document.getElementById('tabOriginal').classList.add('active');
+        document.getElementById('tabAnnotated').classList.remove('active');
+      }
+    }
+
+    function sendAllDetectionsToChat() {
+      if (!state.detectedCodes.length) return;
+      updateActiveTagsUI();
+      switchTab('chat');
+      sendChat(
+        `Explain the detected symbols in this image (${state.detectedCodes.join(', ')}). What do they signify together or individually?`
+      );
+    }
+
+    /* Sample Canvas Generator for instant testing */
+    function generateSampleStela(preset) {
+      const canvas = document.createElement('canvas');
+      canvas.width = 640;
+      canvas.height = 640;
+      const ctx = canvas.getContext('2d');
+
+      // Sandstone / Papyrus Limestone texture background
+      ctx.fillStyle = '#dfd3b8';
+      ctx.fillRect(0, 0, 640, 640);
+
+      // Noise texture
+      for (let i = 0; i < 4000; i++) {
+        ctx.fillStyle = Math.random() > 0.5 ? 'rgba(0,0,0,0.03)' : 'rgba(255,255,255,0.05)';
+        ctx.fillRect(Math.random() * 640, Math.random() * 640, 2, 2);
+      }
+
+      // Stela border frame
+      ctx.strokeStyle = '#8b5e3c';
+      ctx.lineWidth = 12;
+      ctx.strokeRect(20, 20, 600, 600);
+
+      ctx.fillStyle = '#0a2947';
+      ctx.font = '72px "Noto Sans Egyptian Hieroglyphs", "Segoe UI Historic", serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+
+      if (preset === 'ankh') {
+        ctx.fillText('𓋹', 320, 220);
+        ctx.font = '54px "Noto Sans Egyptian Hieroglyphs", "Segoe UI Historic", serif';
+        ctx.fillText('𓊪  𓇳  𓂋', 320, 360);
+        ctx.fillText('𓀀  𓁐', 320, 480);
+      } else if (preset === 'birds') {
+        ctx.fillText('𓅓', 240, 260);
+        ctx.fillText('𓅂', 400, 260);
+        ctx.fillText('𓈖  𓊪  𓇳', 320, 420);
+      } else {
+        ctx.fillText('𓀀', 260, 240);
+        ctx.fillText('𓁐', 380, 240);
+        ctx.fillText('𓋹', 320, 380);
+        ctx.fillText('𓊪  𓇳', 320, 490);
+      }
+
+      canvas.toBlob((blob) => {
+        const file = new File([blob], `stela-${preset}.png`, { type: 'image/png' });
+        handleSelectedFile(file);
+        showToast('Sample hieroglyphic stele generated!', 'info');
+      });
+    }
+
+    /* =====================================================================
+       AI SCRIBE CHAT (TAB 2)
+       ===================================================================== */
+    chatForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const text = chatInput.value.trim();
+      if (!text) return;
+      chatInput.value = '';
+      sendChat(text);
+    });
+
+    chatInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        chatForm.dispatchEvent(new Event('submit'));
+      }
+    });
+
+    async function sendChat(question) {
+      appendChatBubble('user', question);
+      const submitBtn = document.getElementById('sendChatBtn');
+      submitBtn.disabled = true;
+
+      const loadingBubble = appendChatBubble('assistant', 'Consulting ancient hieroglyphic knowledge base…');
+
+      try {
+        const payload = {
+          message: question,
+          history: state.chatHistory.slice(-10),
+          glyph_codes: state.detectedCodes.slice(0, 6),
+          image_context: state.imageContext || ''
+        };
+
+        const res = await fetch('/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || 'Chatbot request failed.');
+
+        loadingBubble.remove();
+        const replyBubble = appendChatBubble('assistant', data.response);
+
+        // Add audio speech synthesis trigger button
+        const audioBtn = document.createElement('button');
+        audioBtn.className = 'btn btn-outline';
+        audioBtn.style.cssText = 'font-size:0.75rem; padding:4px 10px; margin-top:8px; border-color:var(--c-terracotta); color:var(--c-terracotta);';
+        audioBtn.innerHTML = '🔊 Speak Reply';
+        const audioContainer = document.createElement('div');
+        audioContainer.style.marginTop = '6px';
+
+        audioBtn.onclick = async () => {
+          audioBtn.disabled = true;
+          audioBtn.innerHTML = '⏳ Synthesizing…';
+          try {
+            const speakRes = await fetch('/speak', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ text: data.response.slice(0, 1000) })
+            });
+            if (speakRes.ok) {
+              const speakData = await speakRes.json();
+              playBase64Audio(speakData.audio, audioContainer, data.response.slice(0, 60));
+            } else {
+              fallbackSpeak(data.response.slice(0, 400), audioContainer);
+            }
+          } catch {
+            fallbackSpeak(data.response.slice(0, 400), audioContainer);
+          } finally {
+            audioBtn.disabled = false;
+            audioBtn.innerHTML = '🔊 Replay';
+          }
+        };
+
+        replyBubble.appendChild(audioBtn);
+        replyBubble.appendChild(audioContainer);
+
+        // Update history
+        state.chatHistory.push({ role: 'user', content: question });
+        state.chatHistory.push({ role: 'assistant', content: data.response.slice(0, 2000) });
+        if (state.chatHistory.length > 20) state.chatHistory.splice(0, state.chatHistory.length - 20);
+
+      } catch (err) {
+        loadingBubble.className = 'chat-bubble system';
+        loadingBubble.textContent = '⚠️ ' + err.message;
+      } finally {
+        submitBtn.disabled = false;
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }
+    }
+
+    function appendChatBubble(role, text) {
+      const bubble = document.createElement('div');
+      bubble.className = `chat-bubble ${role}`;
+      bubble.innerHTML = formatMarkdown(text);
+      chatMessages.appendChild(bubble);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+      return bubble;
+    }
+
+    function resetChat() {
+      state.chatHistory = [];
+      chatMessages.innerHTML = `
+        <div class="chat-bubble system">
+          Conversation cleared. Session restarted.
+        </div>
+      `;
+      showToast('Chat history reset', 'info');
+    }
+
+    function sendQuickPrompt(promptText) {
+      chatInput.value = promptText;
+      sendChat(promptText);
+    }
+
+    function askChatAboutGlyph(code) {
+      if (!state.detectedCodes.includes(code)) {
+        state.detectedCodes.push(code);
+        updateActiveTagsUI();
+      }
+      switchTab('chat');
+      sendChat(`Tell me about the hieroglyph ${code}. What is its symbol, symbolism, and role in Egyptian writing?`);
+    }
+
+    function addManualTag() {
+      const val = addTagInput.value.trim().toUpperCase();
+      if (val && !state.detectedCodes.includes(val)) {
+        state.detectedCodes.push(val);
+        addTagInput.value = '';
+        updateActiveTagsUI();
+      }
+    }
+
+    function removeTag(code) {
+      state.detectedCodes = state.detectedCodes.filter(c => c !== code);
+      updateActiveTagsUI();
+    }
+
+    function updateActiveTagsUI() {
+      activeTagsContainer.innerHTML = '';
+      if (!state.detectedCodes.length) {
+        activeTagsContainer.innerHTML = '<span style="font-size:0.8rem; color:#888;">No active codes attached</span>';
+        return;
+      }
+      state.detectedCodes.forEach(code => {
+        const chip = document.createElement('span');
+        chip.className = 'tag-chip';
+        chip.innerHTML = `${escapeHtml(code)} <button onclick="removeTag('${escapeHtml(code)}')">✕</button>`;
+        activeTagsContainer.appendChild(chip);
+      });
+    }
+
+    /* =====================================================================
+       SYMBOL EXPLORER (TAB 3)
+       ===================================================================== */
+    function renderCatalog() {
+      const grid = document.getElementById('catalogGrid');
+      grid.innerHTML = '';
+
+      const query = (document.getElementById('catalogSearch').value || '').trim().toLowerCase();
+      const filtered = state.storiesCatalog.filter(item => {
+        const matchCat = state.activeCategory === 'all' || item.category === state.activeCategory;
+        const matchQuery = !query || 
+          item.code.toLowerCase().includes(query) || 
+          item.glyph.includes(query) || 
+          item.story.toLowerCase().includes(query);
+        return matchCat && matchQuery;
+      });
+
+      if (!filtered.length) {
+        grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:40px; color:var(--c-terracotta);">No hieroglyphic symbols matched your query.</div>';
+        return;
+      }
+
+      filtered.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'catalog-card';
+        card.innerHTML = `
+          <div class="catalog-glyph">${item.glyph || '𓀀'}</div>
+          <div class="catalog-code">${escapeHtml(item.code)}</div>
+          <div class="catalog-desc">${escapeHtml(item.story)}</div>
+        `;
+        card.onclick = () => openSymbolModal(item);
+        grid.appendChild(card);
+      });
+    }
+
+    function setCategoryFilter(cat) {
+      state.activeCategory = cat;
+      document.querySelectorAll('.cat-pill').forEach(btn => {
+        btn.classList.toggle('active', btn.textContent.startsWith(cat) || (cat === 'all' && btn.textContent.includes('All')));
+      });
+      renderCatalog();
+    }
+
+    function filterCatalog() {
+      renderCatalog();
+    }
+    document.getElementById('catalogSearch').addEventListener('input', renderCatalog);
+
+    /* Symbol Inspection Modal */
+    let currentModalItem = null;
+    function openSymbolModal(item) {
+      currentModalItem = item;
+      document.getElementById('modalGlyph').textContent = item.glyph || '𓀀';
+      document.getElementById('modalCode').textContent = item.code;
+      document.getElementById('modalStory').textContent = item.story;
+      document.getElementById('modalAudioPlayer').innerHTML = '';
+      document.getElementById('modalArabic').style.display = 'none';
+
+      // Load audio & translation
+      fetchStoryAudioForModal(item.code);
+
+      document.getElementById('symbolModal').classList.add('open');
+    }
+
+    async function fetchStoryAudioForModal(code) {
+      try {
+        const res = await fetch('/get-story-audio', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query: code })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.translated_text && data.translated_text !== 'Translation is currently unavailable.') {
+            const arBox = document.getElementById('modalArabic');
+            arBox.style.display = 'block';
+            arBox.textContent = data.translated_text;
+          }
+          if (data.audio) {
+            playBase64Audio(data.audio, document.getElementById('modalAudioPlayer'), data.transcription);
+          }
+        }
+      } catch (e) {
+        console.log('Story audio unavailable for modal:', e);
+      }
+    }
+
+    function closeSymbolModal() {
+      document.getElementById('symbolModal').classList.remove('open');
+      stopCurrentAudio();
+    }
+
+    function sendModalGlyphToChat() {
+      if (currentModalItem) {
+        askChatAboutGlyph(currentModalItem.code);
+        closeSymbolModal();
+      }
+    }
+
+    function copyModalCode() {
+      if (currentModalItem) {
+        navigator.clipboard.writeText(currentModalItem.code);
+        showToast(`Copied ${currentModalItem.code} to clipboard!`, 'info');
+      }
+    }
+
+    /* =====================================================================
+       VOICE STUDIO (TAB 4)
+       ===================================================================== */
+    async function fetchStoryAudio() {
+      const query = document.getElementById('voiceLookupInput').value.trim();
+      if (!query) return;
+
+      const resultBox = document.getElementById('storyResultBox');
+      const glyphDisp = document.getElementById('storyGlyphDisplay');
+      const codeDisp = document.getElementById('storyCodeDisplay');
+      const transText = document.getElementById('storyTranscriptionText');
+      const arabicText = document.getElementById('storyArabicText');
+      const playerDiv = document.getElementById('storyAudioPlayer');
+
+      resultBox.style.display = 'block';
+      codeDisp.textContent = query.toUpperCase();
+      glyphDisp.textContent = getGlyphForCode(query) || '𓀀';
+      transText.textContent = 'Fetching semantic transcription…';
+      arabicText.textContent = 'Translating…';
+      playerDiv.innerHTML = '';
+
+      try {
+        const res = await fetch('/get-story-audio', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query })
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || 'No story found for this symbol.');
+
+        transText.textContent = data.transcription || 'No transcription available.';
+        arabicText.textContent = data.translated_text || 'Translation unavailable.';
+
+        if (data.audio) {
+          playBase64Audio(data.audio, playerDiv, data.transcription);
+        } else {
+          fallbackSpeak(data.transcription, playerDiv);
+        }
+      } catch (err) {
+        transText.textContent = err.message;
+        arabicText.textContent = '—';
+        showToast(err.message, 'warning');
+      }
+    }
+
+    function playStoryAudioForCode(code) {
+      document.getElementById('voiceLookupInput').value = code;
+      switchTab('voice');
+      fetchStoryAudio();
+    }
+
+    async function synthesizeCustomSpeech() {
+      const text = document.getElementById('ttsTextInput').value.trim();
+      if (!text) return;
+
+      const btn = document.getElementById('ttsSynthesizeBtn');
+      const container = document.getElementById('ttsPlayerContainer');
+      btn.disabled = true;
+      btn.innerHTML = '⏳ Generating Kokoro-82M Audio…';
+
+      try {
+        const res = await fetch('/speak', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text })
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || 'Speech synthesis failed.');
+
+        playBase64Audio(data.audio, container, text);
+        showToast('Speech synthesized successfully!', 'info');
+      } catch (err) {
+        showToast(err.message + ' — playing with browser voice fallback.', 'warning');
+        fallbackSpeak(text, container);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '🎙️ Synthesize Speech';
+      }
+    }
+
+    /* =====================================================================
+       UTILITY HELPERS
+       ===================================================================== */
+    function getGlyphForCode(code) {
+      if (!code) return '';
+      const norm = code.trim().toLowerCase();
+      const match = state.storiesCatalog.find(item => item.code.toLowerCase() === norm);
+      return match ? match.glyph : '';
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function formatMarkdown(text) {
+      if (!text) return '';
+      let escaped = escapeHtml(text);
+      // bold **text**
+      escaped = escaped.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      // bullet points
+      escaped = escaped.replace(/^\s*[-*]\s+(.*)$/gm, '• $1<br>');
+      // new lines
+      escaped = escaped.replace(/\n/g, '<br>');
+      return escaped;
+    }
+  </script>
+</body>
+</html>

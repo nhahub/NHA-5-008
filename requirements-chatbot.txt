@@ -11,6 +11,6 @@ ultralytics==8.3.150
 pillow
 opencv-python
 soundfile
-kokoro
+kokoro<=0.3
 googletrans==4.0.2
 git+https://github.com/openai/CLIP.git

@@ -1,40 +1,41 @@
-# Hieroglyph Assistant
+# Hieroglyph Assistant (Kemet Studio)
 
-This project is a local FastAPI application for learning about Ancient Egyptian hieroglyphs. It has three main features:
+This project is a FastAPI application for learning about and analyzing Ancient Egyptian hieroglyphs using Computer Vision and NLP. It has four main features:
 
-- A chatbot that explains Gardiner codes and Unicode hieroglyph symbols.
-- An image-detection endpoint that uses the saved YOLO model.
-- A speech endpoint that reads a local description and tries to translate it into Arabic.
+- **AI Scribe Chat**: An expert Egyptologist conversational assistant powered by Groq LLM that explains hieroglyphic symbols, Gardiner codes, language, deities, and history—always providing authentic Unicode hieroglyphs (e.g., 𓋹, 𓀀, 𓇳). It answers fluently in both English and Arabic and is unlinked from rigid database limits.
+- **Visual Detector**: An image-detection endpoint that uses a trained YOLOv11 model with zero-shot CLIP pre-filtering to localize and identify Gardiner signs in photos of inscriptions.
+- **Symbol Explorer**: An interactive catalog of 179 curated hieroglyphic signs with phonetic values, categories, and English/Arabic narratives stored in `data/Semantic meaning.json`.
+- **Voice Studio**: A neural speech synthesis service using Kokoro-82M to read aloud sign stories and custom hieroglyphic narratives in high-quality 24 kHz audio.
 
-The chatbot uses the descriptions in `data/Semantic meaning.json`. It can answer in English or Arabic. The Groq API key stays on the server in `.env`; it is never sent to the browser.
+The Groq API key stays securely on the server in `.env`; it is never sent to the browser.
 
 ## Project structure
 
 | Path | Purpose |
 | --- | --- |
-| `app.py` | Main FastAPI application. It connects chat, detection, and speech. |
-| `chatbot/` | Compact chatbot package: settings, request schema, local search, Groq service, and API route/UI. |
-| `data/Semantic meaning.json` | Local descriptions for 179 hieroglyph records. |
-| `models/best.pt` | Saved YOLO detection model. |
-| `notebooks/` | Training and text-to-speech experiment notebooks. They are not needed to start the chatbot. |
-| `tests/` | Automated tests for chat and local data lookup. |
-| `requirements-chatbot.txt` | Packages needed to run the chatbot and FastAPI server. |
-| `.env.example` | Safe example settings file. Copy it to `.env` and add your own Groq key. |
+| `app.py` | Main FastAPI application connecting chat, vision detection, and speech endpoints. |
+| `chatbot.py` | AI Scribe service: Groq LLM client, prompt engineering, request validation, and API routes. |
+| `data/Semantic meaning.json` | Curated catalog data for 179 hieroglyph signs used in the Symbol Explorer and Audio Storyteller. |
+| `models/best.pt` | Trained YOLOv11 hieroglyphic sign detection checkpoint. |
+| `notebooks/` | Computer vision training and TTS experiment notebooks. |
+| `tests/` | Automated pytest suite for API routes, integration, and chatbot services. |
+| `requirements-chatbot.txt` | Python package dependencies for running the full studio pipeline. |
+| `.env.example` | Example environment configuration file. |
 
-## Start the chatbot
+## Start the application
 
 Open PowerShell in the project folder and run:
 
 ```powershell
-.\.venv\Scripts\python.exe -m pip install -r requirements-chatbot.txt
-.\.venv\Scripts\python.exe -m uvicorn app:app --host 127.0.0.1 --port 8000
+pip install -r requirements-chatbot.txt
+python -m uvicorn app:app --host 127.0.0.1 --port 8000
 ```
 
-Then open [http://127.0.0.1:8000](http://127.0.0.1:8000).
+Then open [http://127.0.0.1:8000](http://127.0.0.1:8000) in your browser.
 
 ## Add your Groq key
 
-The chatbot can start without a key, but it cannot generate an AI answer until you add one.
+The server can start without an API key, but the AI Scribe needs a Groq key to answer chat inquiries:
 
 1. Copy `.env.example` to a new file named `.env`.
 2. Open `.env` locally.
@@ -49,17 +50,17 @@ GROQ_MODEL=openai/gpt-oss-20b
 GLYPH_DATA_PATH=data/Semantic meaning.json
 ```
 
-Do not share the key in chat and do not commit `.env`. Git ignores it.
+Do not commit `.env`. Git ignores it.
 
 ## Test the project
 
-Run the automated tests:
+Run the automated test suite:
 
 ```powershell
-.\.venv\Scripts\python.exe -m pytest -q
+python -m pytest -q
 ```
 
-You can also check the server:
+You can also check server health:
 
 ```powershell
 Invoke-WebRequest http://127.0.0.1:8000/health
@@ -67,38 +68,35 @@ Invoke-WebRequest http://127.0.0.1:8000/health
 
 Expected result: JSON with `"status": "API is running"` and `"story_records": 179`.
 
-## Try the chatbot in the browser
+## Try the AI Scribe in the browser
 
-Use these tests after the server is running and your Groq key is configured:
+Use these example queries after the server is running and your Groq key is configured:
 
-| Glyph code | Question | Expected result |
+| Input / Code | Question | Expected result |
 | --- | --- | --- |
-| `A1` | `What does A1 mean?` | An explanation based on the local A1 story. |
-| `S34` | `Explain this symbol in Arabic.` | An Arabic explanation of the ankh and life. |
-| `𓀀` | `Tell me more about this sign.` | The same local record as A1. |
-| `ZZ999` | `What does this code mean?` | A clear message that no local description was found. |
+| `A1` | `What does A1 mean?` | Detailed breakdown of the seated man glyph (𓀀), its transliteration, determinative role, and meaning. |
+| `S34` | `Explain this symbol in Arabic.` | Scholarly explanation of the Ankh (𓋹) and eternal life in Arabic with authentic hieroglyphs. |
+| `𓀀` | `Tell me more about this sign.` | Full Egyptological explanation of the Unicode glyph 𓀀 and its Gardiner category. |
+| Ra / Isis | `Who is the sun-god Ra and how is his name written?` | Historical narrative and name written in hieroglyphs (𓂋𓏏). |
 
-You can enter a known Gardiner code or Unicode symbol in the **Glyph codes** box, or upload an image. For uploads, the detector returns labelled Gardiner codes, confidence scores, bounding boxes in the annotated image, and any matching local descriptions. Manual codes remain useful when you already know the symbol or want to correct an uncertain detection.
+You can enter known Gardiner codes or Unicode symbols in the **Active hieroglyphs & Gardiner codes** box, or upload an image. Manual codes remain useful when you already know the symbol or want to guide the conversation.
 
-## Upload an image in the chat
+## Upload an image in the studio
 
-Use the **Upload a hieroglyph image** button. The chat accepts JPG, PNG, and WebP images up to 10 MB.
+Use the **Drop inscription image here** area or paste directly with `Ctrl+V`. The studio accepts JPG, PNG, and WebP images up to 10 MB.
 
 After upload, the app:
 
-1. Screens the image for hieroglyph content.
+1. Screens the image with zero-shot CLIP to ensure it contains hieroglyphic inscriptions.
 2. Runs the trained YOLO detector when the screen passes.
-3. Shows an annotated image and labels such as `Symbol 1: A1` with confidence scores.
-4. Sends verified detector codes and matching local descriptions to the chatbot.
-5. Keeps these symbol labels for later questions such as “What does Symbol 2 mean?”
+3. Shows an annotated image with bounding boxes, Gardiner codes (e.g. `A1`), and confidence scores.
+4. Automatically attaches detected codes to the AI Scribe for follow-up conversational questions.
+5. Keeps symbol labels (e.g. `Symbol 1`, `Symbol 2`) for reference in chat.
 
-The symbol numbers are labels for the screen only. They do **not** claim the reading order of an Ancient Egyptian inscription. A detected code can also have no local description; the interface reports this clearly.
-
-Each chatbot answer has a **Play audio** button. It reads the generated answer with the local Kokoro speech service. First use may download public speech-model files and can take longer.
+Each chatbot answer includes a **Play audio** button to generate speech using the Kokoro neural voice synthesizer.
 
 ## Important notes
 
-- The detector and speech features load their heavy packages only when you call their endpoints. This keeps the chatbot fast to start.
-- Detection needs extra computer-vision packages and may need model downloads. Speech needs Kokoro, SoundFile, Google Translate access, and its model files.
-- The stored descriptions are project data. They should be checked by an Egyptology expert before being used as final academic information.
-- The live Groq response depends on network access, your API key, and your free-plan limit.
+- Heavy computer vision and speech dependencies load lazily only when their respective endpoints are called, keeping startup fast.
+- The AI Scribe draws upon broad Egyptological knowledge and embeds Unicode hieroglyphs in answers rather than restricting responses to local files.
+- The curated catalog (`data/Semantic meaning.json`) serves as a structured reference for the Symbol Explorer and quick audio story generation.

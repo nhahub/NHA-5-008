@@ -2697,8 +2697,7 @@
       });
 
       // 3. Tables (| Header 1 | Header 2 |)
-      const tableRegex = /(?:^\|[^
-]+\|[ \t]*(?:\n|$)){2,}/gm;
+      const tableRegex = /(?:^\|[^\r\n]+\|[ \t]*(?:\n|$)){2,}/gm;
       src = src.replace(tableRegex, (tableBlock) => {
         const lines = tableBlock.trim().split('\n').map(l => l.trim()).filter(Boolean);
         if (lines.length < 2) return tableBlock;

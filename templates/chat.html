@@ -1124,6 +1124,134 @@
       color: var(--c-papyrus);
       text-decoration: none;
     }
+
+    /* Interactive Symbol Cropper Modal */
+    .crop-modal-content {
+      max-width: 780px;
+      width: 95%;
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      background: var(--c-papyrus-light);
+      border: 2px solid var(--c-terracotta);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .crop-modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--c-limestone);
+    }
+
+    .crop-workspace-wrapper {
+      background: #111e2e;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--c-limestone);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      max-height: 56vh;
+      min-height: 240px;
+      position: relative;
+      background-image: 
+        radial-gradient(rgba(211, 212, 192, 0.15) 1px, transparent 1px);
+      background-size: 16px 16px;
+    }
+
+    .crop-workspace {
+      position: relative;
+      display: inline-block;
+      overflow: hidden;
+      user-select: none;
+      touch-action: none;
+    }
+
+    #cropImage {
+      display: block;
+      max-width: 100%;
+      max-height: 56vh;
+      object-fit: contain;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    .crop-box {
+      position: absolute;
+      box-sizing: border-box;
+      border: 2px solid var(--c-terracotta);
+      outline: 1px dashed #ffffff;
+      box-shadow: 0 0 0 9999px rgba(5, 25, 45, 0.68);
+      cursor: move;
+      touch-action: none;
+    }
+
+    .crop-badge {
+      position: absolute;
+      top: -24px;
+      left: 0;
+      background: var(--c-navy);
+      color: var(--c-papyrus);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      white-space: nowrap;
+      pointer-events: none;
+      border: 1px solid var(--c-terracotta);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .crop-handle {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      background: var(--c-terracotta);
+      border: 2px solid var(--c-papyrus);
+      border-radius: 2px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.5);
+    }
+
+    .handle-nw { top: -6px; left: -6px; cursor: nwse-resize; }
+    .handle-ne { top: -6px; right: -6px; cursor: nesw-resize; }
+    .handle-se { bottom: -6px; right: -6px; cursor: nwse-resize; }
+    .handle-sw { bottom: -6px; left: -6px; cursor: nesw-resize; }
+    .handle-n { top: -6px; left: calc(50% - 6px); cursor: ns-resize; }
+    .handle-s { bottom: -6px; left: calc(50% - 6px); cursor: ns-resize; }
+    .handle-w { left: -6px; top: calc(50% - 6px); cursor: ew-resize; }
+    .handle-e { right: -6px; top: calc(50% - 6px); cursor: ew-resize; }
+
+    .crop-modal-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding-top: 10px;
+      border-top: 1px solid var(--c-limestone);
+    }
+
+    .crop-info-text {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .crop-dim-badge {
+      font-size: 0.8rem;
+      background: var(--c-papyrus-card);
+      border: 1px solid var(--c-limestone);
+      padding: 5px 12px;
+      border-radius: 4px;
+      color: var(--c-navy);
+      font-weight: 700;
+      font-family: var(--font-body);
+    }
   </style>
 </head>
 <body>
@@ -1200,8 +1328,9 @@
                 <span id="fileName" style="font-weight: 600; font-size: 0.9rem;">filename.jpg</span>
                 <span id="fileSize" style="font-size: 0.8rem; color: var(--c-terracotta);">0 KB</span>
               </div>
-              <div style="margin-top: 10px; display: flex; gap: 8px;">
+              <div style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap;">
                 <button id="runDetectBtn" class="btn btn-primary" style="flex: 1;" type="button">🚀 Analyze Hieroglyphs</button>
+                <button id="recropBtn" class="btn btn-outline" type="button" onclick="reopenCropModal()" title="Crop a specific symbol from this inscription">✂️ Crop Symbol</button>
                 <button id="clearFileBtn" class="btn btn-outline" type="button">✕ Reset</button>
               </div>
             </div>
@@ -1233,9 +1362,12 @@
               <div class="viewer-toolbar">
                 <div class="viewer-tabs">
                   <button id="tabAnnotated" class="viewer-tab-btn active" onclick="switchImageView('annotated')">Detections</button>
-                  <button id="tabOriginal" class="viewer-tab-btn" onclick="switchImageView('original')">Original</button>
+                  <button id="tabOriginal" class="viewer-tab-btn" onclick="switchImageView('original')">Inspected Image</button>
                 </div>
-                <span id="detectionCountBadge" style="font-size: 0.8rem; font-weight: 600;">0 Symbols Found</span>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <button id="toolbarRecropBtn" class="btn btn-outline" style="padding: 2px 10px; font-size: 0.76rem; border-color: var(--c-limestone); color: var(--c-papyrus);" type="button" onclick="reopenCropModal()" title="Crop another symbol from this inscription">✂️ Re-crop</button>
+                  <span id="detectionCountBadge" style="font-size: 0.8rem; font-weight: 600;">0 Symbols Found</span>
+                </div>
               </div>
               <div class="viewer-viewport">
                 <img id="viewerImage" src="" alt="Hieroglyph View">
@@ -1452,6 +1584,52 @@
     </div>
   </div>
 
+  <!-- Modal for Cropping Target Symbol -->
+  <div id="cropModal" class="modal-backdrop">
+    <div class="modal-content crop-modal-content">
+      <div class="crop-modal-header">
+        <div>
+          <h3 style="font-family: var(--font-display); font-size: 1.15rem; color: var(--c-navy); display: flex; align-items: center; gap: 8px;">
+            <span>✂️</span> Isolate Target Symbol (Crop)
+          </h3>
+          <p style="font-size: 0.8rem; color: var(--c-terracotta); margin-top: 2px;">
+            Drag and resize the crop box over the specific hieroglyph you want to analyze, or scan the entire inscription.
+          </p>
+        </div>
+        <button class="modal-close" type="button" onclick="closeCropModal(true)">✕</button>
+      </div>
+
+      <div class="crop-workspace-wrapper">
+        <div id="cropWorkspace" class="crop-workspace">
+          <img id="cropImage" src="" alt="Crop Source Preview" draggable="false">
+          <div id="cropBox" class="crop-box">
+            <div class="crop-badge">✂️ Target Symbol</div>
+            <!-- Resize Handles -->
+            <div class="crop-handle handle-nw" data-handle="nw"></div>
+            <div class="crop-handle handle-ne" data-handle="ne"></div>
+            <div class="crop-handle handle-se" data-handle="se"></div>
+            <div class="crop-handle handle-sw" data-handle="sw"></div>
+            <div class="crop-handle handle-n" data-handle="n"></div>
+            <div class="crop-handle handle-s" data-handle="s"></div>
+            <div class="crop-handle handle-w" data-handle="w"></div>
+            <div class="crop-handle handle-e" data-handle="e"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="crop-modal-footer">
+        <div class="crop-info-text">
+          <span id="cropDimensionsBadge" class="crop-dim-badge">0 × 0 px</span>
+          <button class="btn btn-outline" style="padding: 5px 12px; font-size: 0.78rem;" type="button" onclick="resetCropBox()">↺ Center Box</button>
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button id="btnSkipCrop" class="btn btn-outline" type="button" onclick="applyFullImage()">🖼️ Use Entire Image</button>
+          <button id="btnApplyCrop" class="btn btn-primary" type="button" onclick="applyCroppedImage()">✂️ Crop & Scan Symbol</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Toast Notification Stack -->
   <div id="toastStack" class="toast-container"></div>
 
@@ -1476,6 +1654,8 @@
       detectedCodes: [],
       imageContext: '',
       currentImageFile: null,
+      rawOriginalFile: null,
+      rawOriginalDataUrl: null,
       annotatedImageDataUrl: null,
       originalImageDataUrl: null,
       chatHistory: [],
@@ -1524,6 +1704,7 @@
       setupTabs();
       setupDragAndDrop();
       setupGlobalPaste();
+      initCropperEvents();
     });
 
     async function checkHealth() {
@@ -1745,25 +1926,22 @@
         return;
       }
 
+      state.rawOriginalFile = file;
       state.currentImageFile = file;
-      fileName.textContent = file.name || 'Pasted-Hieroglyph.png';
-      fileSize.textContent = (file.size / 1024).toFixed(1) + ' KB';
-      fileInfo.style.display = 'block';
 
       const reader = new FileReader();
       reader.onload = (e) => {
+        state.rawOriginalDataUrl = e.target.result;
         state.originalImageDataUrl = e.target.result;
-        viewerImage.src = e.target.result;
-        viewerBox.style.display = 'block';
-        emptyViewerState.style.display = 'none';
-        document.getElementById('tabOriginal').classList.add('active');
-        document.getElementById('tabAnnotated').classList.remove('active');
+        openCropModal(e.target.result, file.name);
       };
       reader.readAsDataURL(file);
     }
 
     function resetDetector() {
       state.currentImageFile = null;
+      state.rawOriginalFile = null;
+      state.rawOriginalDataUrl = null;
       state.annotatedImageDataUrl = null;
       state.originalImageDataUrl = null;
       state.detectedCodes = [];
@@ -2328,6 +2506,283 @@
       // new lines
       escaped = escaped.replace(/\n/g, '<br>');
       return escaped;
+    }
+
+    /* =====================================================================
+       INTERACTIVE SYMBOL CROPPER (MODAL & ENGINE)
+       ===================================================================== */
+    const cropModal = document.getElementById('cropModal');
+    const cropWorkspace = document.getElementById('cropWorkspace');
+    const cropImage = document.getElementById('cropImage');
+    const cropBox = document.getElementById('cropBox');
+    const cropDimensionsBadge = document.getElementById('cropDimensionsBadge');
+
+    const cropState = {
+      x: 0,
+      y: 0,
+      w: 120,
+      h: 120,
+      mode: null, // 'move', 'resize', 'create'
+      handle: null,
+      startX: 0,
+      startY: 0,
+      initialX: 0,
+      initialY: 0,
+      initialW: 0,
+      initialH: 0
+    };
+
+    function openCropModal(imageUrl, filename) {
+      if (!imageUrl) return;
+      cropModal.classList.add('open');
+      cropImage.src = imageUrl;
+
+      cropImage.onload = () => {
+        const imgW = cropImage.clientWidth || 300;
+        const imgH = cropImage.clientHeight || 300;
+        const boxW = Math.max(48, Math.round(imgW * 0.5));
+        const boxH = Math.max(48, Math.round(imgH * 0.5));
+        cropState.x = Math.round((imgW - boxW) / 2);
+        cropState.y = Math.round((imgH - boxH) / 2);
+        cropState.w = boxW;
+        cropState.h = boxH;
+        updateCropBoxUI();
+      };
+    }
+
+    function closeCropModal(cancelled = false) {
+      cropModal.classList.remove('open');
+      if (cancelled && !state.currentImageFile && !state.rawOriginalFile) {
+        resetDetector();
+      }
+    }
+
+    function reopenCropModal() {
+      if (!state.rawOriginalDataUrl) {
+        showToast('Please upload or select an inscription image first.', 'warning');
+        return;
+      }
+      openCropModal(state.rawOriginalDataUrl, state.rawOriginalFile ? state.rawOriginalFile.name : 'inscription.jpg');
+    }
+
+    function resetCropBox() {
+      if (!cropImage.clientWidth || !cropImage.clientHeight) return;
+      const imgW = cropImage.clientWidth;
+      const imgH = cropImage.clientHeight;
+      const boxW = Math.max(48, Math.round(imgW * 0.5));
+      const boxH = Math.max(48, Math.round(imgH * 0.5));
+      cropState.x = Math.round((imgW - boxW) / 2);
+      cropState.y = Math.round((imgH - boxH) / 2);
+      cropState.w = boxW;
+      cropState.h = boxH;
+      updateCropBoxUI();
+    }
+
+    function updateCropBoxUI() {
+      const imgW = cropImage.clientWidth || 1;
+      const imgH = cropImage.clientHeight || 1;
+
+      cropState.w = Math.max(24, Math.min(cropState.w, imgW));
+      cropState.h = Math.max(24, Math.min(cropState.h, imgH));
+      cropState.x = Math.max(0, Math.min(cropState.x, imgW - cropState.w));
+      cropState.y = Math.max(0, Math.min(cropState.y, imgH - cropState.h));
+
+      cropBox.style.left = cropState.x + 'px';
+      cropBox.style.top = cropState.y + 'px';
+      cropBox.style.width = cropState.w + 'px';
+      cropBox.style.height = cropState.h + 'px';
+
+      const scaleX = (cropImage.naturalWidth || 1) / imgW;
+      const scaleY = (cropImage.naturalHeight || 1) / imgH;
+      const realW = Math.round(cropState.w * scaleX);
+      const realH = Math.round(cropState.h * scaleY);
+      cropDimensionsBadge.textContent = `${realW} × ${realH} px`;
+    }
+
+    function initCropperEvents() {
+      // Handles resize
+      const handles = cropBox.querySelectorAll('.crop-handle');
+      handles.forEach(h => {
+        h.addEventListener('pointerdown', (e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          cropState.mode = 'resize';
+          cropState.handle = h.dataset.handle;
+          cropState.startX = e.clientX;
+          cropState.startY = e.clientY;
+          cropState.initialX = cropState.x;
+          cropState.initialY = cropState.y;
+          cropState.initialW = cropState.w;
+          cropState.initialH = cropState.h;
+          cropWorkspace.setPointerCapture(e.pointerId);
+        });
+      });
+
+      // Box move
+      cropBox.addEventListener('pointerdown', (e) => {
+        if (e.target.classList.contains('crop-handle')) return;
+        e.stopPropagation();
+        e.preventDefault();
+        cropState.mode = 'move';
+        cropState.startX = e.clientX;
+        cropState.startY = e.clientY;
+        cropState.initialX = cropState.x;
+        cropState.initialY = cropState.y;
+        cropWorkspace.setPointerCapture(e.pointerId);
+      });
+
+      // Create new box by clicking and dragging on workspace
+      cropWorkspace.addEventListener('pointerdown', (e) => {
+        if (e.target.closest('#cropBox')) return;
+        e.preventDefault();
+        const rect = cropWorkspace.getBoundingClientRect();
+        const clickX = e.clientX - rect.left;
+        const clickY = e.clientY - rect.top;
+        cropState.mode = 'create';
+        cropState.startX = clickX;
+        cropState.startY = clickY;
+        cropState.x = clickX;
+        cropState.y = clickY;
+        cropState.w = 10;
+        cropState.h = 10;
+        updateCropBoxUI();
+        cropWorkspace.setPointerCapture(e.pointerId);
+      });
+
+      cropWorkspace.addEventListener('pointermove', (e) => {
+        if (!cropState.mode) return;
+        const rect = cropWorkspace.getBoundingClientRect();
+        const imgW = cropImage.clientWidth;
+        const imgH = cropImage.clientHeight;
+
+        if (cropState.mode === 'move') {
+          const dx = e.clientX - cropState.startX;
+          const dy = e.clientY - cropState.startY;
+          cropState.x = cropState.initialX + dx;
+          cropState.y = cropState.initialY + dy;
+          updateCropBoxUI();
+        } else if (cropState.mode === 'resize') {
+          const dx = e.clientX - cropState.startX;
+          const dy = e.clientY - cropState.startY;
+          const hType = cropState.handle;
+
+          let newX = cropState.initialX;
+          let newY = cropState.initialY;
+          let newW = cropState.initialW;
+          let newH = cropState.initialH;
+
+          if (hType.includes('e')) newW = cropState.initialW + dx;
+          if (hType.includes('s')) newH = cropState.initialH + dy;
+          if (hType.includes('w')) {
+            newW = cropState.initialW - dx;
+            newX = cropState.initialX + dx;
+          }
+          if (hType.includes('n')) {
+            newH = cropState.initialH - dy;
+            newY = cropState.initialY + dy;
+          }
+
+          if (newW >= 24) {
+            cropState.x = newX;
+            cropState.w = newW;
+          }
+          if (newH >= 24) {
+            cropState.y = newY;
+            cropState.h = newH;
+          }
+          updateCropBoxUI();
+        } else if (cropState.mode === 'create') {
+          const currX = Math.max(0, Math.min(imgW, e.clientX - rect.left));
+          const currY = Math.max(0, Math.min(imgH, e.clientY - rect.top));
+          cropState.x = Math.min(cropState.startX, currX);
+          cropState.y = Math.min(cropState.startY, currY);
+          cropState.w = Math.max(24, Math.abs(currX - cropState.startX));
+          cropState.h = Math.max(24, Math.abs(currY - cropState.startY));
+          updateCropBoxUI();
+        }
+      });
+
+      const endPointer = (e) => {
+        if (cropState.mode) {
+          try { cropWorkspace.releasePointerCapture(e.pointerId); } catch (err) {}
+          cropState.mode = null;
+          updateCropBoxUI();
+        }
+      };
+      cropWorkspace.addEventListener('pointerup', endPointer);
+      cropWorkspace.addEventListener('pointercancel', endPointer);
+    }
+
+    function applyCroppedImage() {
+      if (!cropImage.naturalWidth || !cropState.w || !cropState.h) {
+        applyFullImage();
+        return;
+      }
+      const scaleX = cropImage.naturalWidth / cropImage.clientWidth;
+      const scaleY = cropImage.naturalHeight / cropImage.clientHeight;
+      const sx = Math.max(0, Math.round(cropState.x * scaleX));
+      const sy = Math.max(0, Math.round(cropState.y * scaleY));
+      const sw = Math.min(cropImage.naturalWidth - sx, Math.round(cropState.w * scaleX));
+      const sh = Math.min(cropImage.naturalHeight - sy, Math.round(cropState.h * scaleY));
+
+      if (sw < 15 || sh < 15) {
+        showToast('Selected crop area is too small. Please select a larger symbol area.', 'warning');
+        return;
+      }
+
+      const canvas = document.createElement('canvas');
+      canvas.width = sw;
+      canvas.height = sh;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(cropImage, sx, sy, sw, sh, 0, 0, sw, sh);
+
+      canvas.toBlob((blob) => {
+        if (!blob) {
+          showToast('Failed to crop symbol image.', 'error');
+          return;
+        }
+        const origName = state.rawOriginalFile ? state.rawOriginalFile.name : 'symbol.png';
+        const croppedFile = new File([blob], `cropped-${origName}`, { type: 'image/jpeg' });
+
+        state.currentImageFile = croppedFile;
+        fileName.textContent = `✂️ Cropped Symbol (${sw}×${sh} px)`;
+        fileSize.textContent = (blob.size / 1024).toFixed(1) + ' KB';
+        fileInfo.style.display = 'block';
+
+        const croppedDataUrl = canvas.toDataURL('image/jpeg', 0.95);
+        state.originalImageDataUrl = croppedDataUrl;
+        viewerImage.src = croppedDataUrl;
+        viewerBox.style.display = 'block';
+        emptyViewerState.style.display = 'none';
+        document.getElementById('tabOriginal').classList.add('active');
+        document.getElementById('tabAnnotated').classList.remove('active');
+
+        closeCropModal();
+        showToast(`Target symbol isolated (${sw}×${sh} px) — scanning with YOLO & CLIP...`, 'info');
+        executeDetection();
+      }, 'image/jpeg', 0.95);
+    }
+
+    function applyFullImage() {
+      if (!state.rawOriginalFile && !state.currentImageFile) return;
+      const fileToUse = state.rawOriginalFile || state.currentImageFile;
+      state.currentImageFile = fileToUse;
+      fileName.textContent = fileToUse.name || 'Full-Inscription.jpg';
+      fileSize.textContent = (fileToUse.size / 1024).toFixed(1) + ' KB';
+      fileInfo.style.display = 'block';
+
+      if (state.rawOriginalDataUrl) {
+        state.originalImageDataUrl = state.rawOriginalDataUrl;
+        viewerImage.src = state.rawOriginalDataUrl;
+        viewerBox.style.display = 'block';
+        emptyViewerState.style.display = 'none';
+        document.getElementById('tabOriginal').classList.add('active');
+        document.getElementById('tabAnnotated').classList.remove('active');
+      }
+
+      closeCropModal();
+      showToast('Scanning full inscription image with YOLO & CLIP...', 'info');
+      executeDetection();
     }
   </script>
 </body>

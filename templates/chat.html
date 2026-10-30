@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+Egyptian+Hieroglyphs&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
     :root {
       /* User's Exact Color Palette */
@@ -737,6 +738,150 @@
       border: 1px solid var(--c-limestone);
       border-bottom-left-radius: 2px;
       box-shadow: var(--shadow-sm);
+      font-size: 0.94rem;
+      line-height: 1.6;
+    }
+
+    /* Markdown Element Styling inside Assistant Chat Bubbles */
+    .chat-bubble.assistant p {
+      margin: 8px 0;
+    }
+
+    .chat-bubble.assistant p:first-child {
+      margin-top: 0;
+    }
+
+    .chat-bubble.assistant p:last-child {
+      margin-bottom: 0;
+    }
+
+    .chat-bubble.assistant h1,
+    .chat-bubble.assistant h2,
+    .chat-bubble.assistant h3,
+    .chat-bubble.assistant h4 {
+      font-family: var(--font-display);
+      color: var(--c-navy);
+      margin: 14px 0 6px 0;
+      line-height: 1.3;
+    }
+
+    .chat-bubble.assistant h1 { font-size: 1.25rem; border-bottom: 2px solid var(--c-limestone); padding-bottom: 4px; }
+    .chat-bubble.assistant h2 { font-size: 1.15rem; border-bottom: 1px solid var(--c-limestone); padding-bottom: 3px; }
+    .chat-bubble.assistant h3 { font-size: 1.05rem; }
+    .chat-bubble.assistant h4 { font-size: 0.96rem; }
+
+    .chat-bubble.assistant hr,
+    .chat-hr {
+      border: 0;
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--c-terracotta), var(--c-limestone), transparent);
+      margin: 16px 0;
+    }
+
+    .chat-table-wrapper {
+      width: 100%;
+      overflow-x: auto;
+      margin: 12px 0;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--c-limestone);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .chat-bubble.assistant table,
+    .chat-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+      text-align: left;
+    }
+
+    .chat-bubble.assistant th,
+    .chat-table th {
+      background: var(--c-navy);
+      color: var(--c-papyrus);
+      padding: 10px 14px;
+      font-weight: 600;
+      text-align: left;
+      font-family: var(--font-display);
+      letter-spacing: 0.5px;
+      border-bottom: 2px solid var(--c-terracotta);
+    }
+
+    .chat-bubble.assistant td,
+    .chat-table td {
+      padding: 9px 14px;
+      border-bottom: 1px solid var(--c-limestone);
+      background: #ffffff;
+      color: var(--c-navy);
+      vertical-align: top;
+    }
+
+    .chat-bubble.assistant tr:nth-child(even) td,
+    .chat-table tr:nth-child(even) td {
+      background: var(--c-papyrus-light);
+    }
+
+    .chat-bubble.assistant tr:hover td,
+    .chat-table tr:hover td {
+      background: var(--c-papyrus-card);
+    }
+
+    .chat-bubble.assistant ul,
+    .chat-bubble.assistant ol {
+      margin: 8px 0 8px 22px;
+      padding-left: 4px;
+    }
+
+    .chat-bubble.assistant li {
+      margin-bottom: 6px;
+      line-height: 1.55;
+    }
+
+    .chat-bubble.assistant blockquote {
+      border-left: 4px solid var(--c-terracotta);
+      background: var(--c-papyrus-card);
+      padding: 8px 14px;
+      margin: 10px 0;
+      font-style: italic;
+      color: var(--c-navy-surface);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    }
+
+    .chat-bubble.assistant code {
+      background: var(--c-papyrus-card);
+      border: 1px solid var(--c-limestone);
+      color: var(--c-terracotta);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 0.88em;
+    }
+
+    .chat-bubble.assistant pre {
+      background: #05192d;
+      color: var(--c-papyrus);
+      padding: 12px;
+      border-radius: var(--radius-sm);
+      overflow-x: auto;
+      margin: 10px 0;
+      border: 1px solid var(--c-limestone);
+    }
+
+    .chat-bubble.assistant pre code {
+      background: transparent;
+      border: 0;
+      color: inherit;
+      padding: 0;
+    }
+
+    .hieroglyph-sign {
+      font-family: var(--font-glyph);
+      font-size: 1.4em;
+      line-height: 1;
+      vertical-align: -0.12em;
+      margin: 0 2px;
+      color: var(--c-navy);
+      display: inline-block;
     }
 
     .chat-bubble.system {
@@ -2487,7 +2632,7 @@
       return match ? match.glyph : '';
     }
 
-    function escapeHtml(str) {
+        function escapeHtml(str) {
       if (!str) return '';
       return String(str)
         .replace(/&/g, '&amp;')
@@ -2496,16 +2641,147 @@
         .replace(/"/g, '&quot;');
     }
 
+    function wrapHieroglyphs(htmlStr) {
+      if (!htmlStr) return '';
+      // Egyptian Hieroglyphs Unicode Block: U+13000 to U+1342F
+      return htmlStr.replace(/([\u{13000}-\u{1342F}]+)/gu, '<span class="hieroglyph-sign">$1</span>');
+    }
+
+    function formatInlineMarkdown(text) {
+      if (!text) return '';
+      let s = text;
+      // Bold
+      s = s.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      s = s.replace(/__(.*?)__/g, '<strong>$1</strong>');
+      // Italics
+      s = s.replace(/\*(.*?)\*/g, '<em>$1</em>');
+      s = s.replace(/_([^_]+)_/g, '<em>$1</em>');
+      // Inline code
+      s = s.replace(/`([^`]+)`/g, '<code class="chat-inline-code">$1</code>');
+      return s;
+    }
+
     function formatMarkdown(text) {
       if (!text) return '';
-      let escaped = escapeHtml(text);
-      // bold **text**
-      escaped = escaped.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-      // bullet points
-      escaped = escaped.replace(/^\s*[-*]\s+(.*)$/gm, '• $1<br>');
-      // new lines
-      escaped = escaped.replace(/\n/g, '<br>');
-      return escaped;
+
+      // If marked.js is available via CDN, use it with custom table wrapper
+      if (typeof marked !== 'undefined' && typeof marked.parse === 'function') {
+        try {
+          let parsed = marked.parse(text);
+          // Wrap tables for horizontal scroll responsiveness
+          parsed = parsed.replace(/<table>/g, '<div class="chat-table-wrapper"><table class="chat-table">')
+                         .replace(/<\/table>/g, '</table></div>');
+          return wrapHieroglyphs(parsed);
+        } catch (e) {
+          console.warn('Marked parsing fallback:', e);
+        }
+      }
+
+      // Built-in Comprehensive Markdown Fallback Engine (zero-dependency & offline)
+      let src = String(text).replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+
+      // 1. Code blocks
+      const codeBlocks = [];
+      src = src.replace(/```([a-zA-Z0-9_-]*)\n([\s\S]*?)```/g, (m, lang, code) => {
+        const id = `___CODEBLOCK_${codeBlocks.length}___`;
+        codeBlocks.push(`<pre class="chat-pre"><code>${escapeHtml(code.trim())}</code></pre>`);
+        return id;
+      });
+
+      // 2. Inline code
+      const inlineCodes = [];
+      src = src.replace(/`([^`]+)`/g, (m, code) => {
+        const id = `___INLINECODE_${inlineCodes.length}___`;
+        inlineCodes.push(`<code>${escapeHtml(code)}</code>`);
+        return id;
+      });
+
+      // 3. Tables (| Header 1 | Header 2 |)
+      const tableRegex = /(?:^\|[^
+]+\|[ \t]*(?:\n|$)){2,}/gm;
+      src = src.replace(tableRegex, (tableBlock) => {
+        const lines = tableBlock.trim().split('\n').map(l => l.trim()).filter(Boolean);
+        if (lines.length < 2) return tableBlock;
+
+        const parseRow = (line) => {
+          const parts = line.split('|');
+          if (parts.length >= 2) return parts.slice(1, -1).map(c => c.trim());
+          return [];
+        };
+
+        const isSep = /^\|(?:\s*:?-+:?\s*\|)+$/.test(lines[1]);
+        if (!isSep) return tableBlock;
+
+        const headers = parseRow(lines[0]);
+        let tHtml = '<div class="chat-table-wrapper"><table class="chat-table"><thead><tr>';
+        headers.forEach(h => {
+          tHtml += `<th>${formatInlineMarkdown(escapeHtml(h))}</th>`;
+        });
+        tHtml += '</tr></thead><tbody>';
+
+        for (let i = 2; i < lines.length; i++) {
+          const cells = parseRow(lines[i]);
+          if (!cells.length) continue;
+          tHtml += '<tr>';
+          cells.forEach(c => {
+            tHtml += `<td>${formatInlineMarkdown(escapeHtml(c))}</td>`;
+          });
+          tHtml += '</tr>';
+        }
+        tHtml += '</tbody></table></div>';
+        return tHtml;
+      });
+
+      // 4. Blockquotes
+      src = src.replace(/(?:^>[ \t]?[^\n]*(?:\n|$))+/gm, (bqBlock) => {
+        const content = bqBlock.split('\n').map(l => l.replace(/^>[ \t]?/, '')).join('\n');
+        return `<blockquote>${formatInlineMarkdown(escapeHtml(content.trim()))}</blockquote>`;
+      });
+
+      // 5. Headings
+      src = src.replace(/^####[ \t]+([^\n]+)$/gm, (m, h) => `<h4>${formatInlineMarkdown(escapeHtml(h))}</h4>`);
+      src = src.replace(/^###[ \t]+([^\n]+)$/gm, (m, h) => `<h3>${formatInlineMarkdown(escapeHtml(h))}</h3>`);
+      src = src.replace(/^##[ \t]+([^\n]+)$/gm, (m, h) => `<h2>${formatInlineMarkdown(escapeHtml(h))}</h2>`);
+      src = src.replace(/^#[ \t]+([^\n]+)$/gm, (m, h) => `<h1>${formatInlineMarkdown(escapeHtml(h))}</h1>`);
+
+      // 6. Horizontal Rules
+      src = src.replace(/^(?:---|___|\*\*\*)[ \t]*$/gm, '<hr class="chat-hr">');
+
+      // 7. Unordered Lists
+      src = src.replace(/(?:^[ \t]*[-*•][ \t]+[^\n]+(?:\n|$))+/gm, (listBlock) => {
+        const items = listBlock.trim().split('\n').map(l => {
+          const m = l.match(/^[ \t]*[-*•][ \t]+(.*)$/);
+          return m ? `<li>${formatInlineMarkdown(escapeHtml(m[1]))}</li>` : '';
+        }).join('');
+        return `<ul>${items}</ul>`;
+      });
+
+      // 8. Ordered Lists
+      src = src.replace(/(?:^[ \t]*\d+\.[ \t]+[^\n]+(?:\n|$))+/gm, (listBlock) => {
+        const items = listBlock.trim().split('\n').map(l => {
+          const m = l.match(/^[ \t]*\d+\.[ \t]+(.*)$/);
+          return m ? `<li>${formatInlineMarkdown(escapeHtml(m[1]))}</li>` : '';
+        }).join('');
+        return `<ol>${items}</ol>`;
+      });
+
+      // 9. Split paragraphs
+      const blocks = src.split(/\n{2,}/);
+      const formatted = blocks.map(b => {
+        const trimmed = b.trim();
+        if (!trimmed) return '';
+        if (/^<(?:div|table|blockquote|h[1-6]|hr|ul|ol|pre)/i.test(trimmed)) return trimmed;
+        if (/^___CODEBLOCK_\d+___$/.test(trimmed)) return trimmed;
+        return `<p>${formatInlineMarkdown(escapeHtml(trimmed)).replace(/\n/g, '<br>')}</p>`;
+      });
+
+      let out = formatted.filter(Boolean).join('\n');
+
+      // Restore inline code and code blocks
+      inlineCodes.forEach((c, idx) => { out = out.replace(`___INLINECODE_${idx}___`, c); });
+      codeBlocks.forEach((cb, idx) => { out = out.replace(`___CODEBLOCK_${idx}___`, cb); });
+
+      return wrapHieroglyphs(out);
     }
 
     /* =====================================================================

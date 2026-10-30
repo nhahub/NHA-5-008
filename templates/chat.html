@@ -602,15 +602,18 @@
     /* CHAT MODULE */
     .chat-layout {
       display: grid;
-      grid-template-columns: 280px 1fr;
+      grid-template-columns: 290px 1fr;
       gap: 20px;
-      height: 720px;
+      height: calc(100vh - 165px);
+      min-height: 640px;
+      max-height: 880px;
     }
 
     @media (max-width: 900px) {
       .chat-layout {
         grid-template-columns: 1fr;
         height: auto;
+        max-height: none;
       }
     }
 
@@ -622,6 +625,10 @@
       display: flex;
       flex-direction: column;
       gap: 16px;
+      overflow-y: auto;
+      height: 100%;
+      min-height: 0;
+      box-shadow: var(--shadow-sm);
     }
 
     .chat-sidebar h4 {
@@ -636,6 +643,9 @@
       display: flex;
       flex-wrap: wrap;
       gap: 6px;
+      max-height: 140px;
+      overflow-y: auto;
+      padding-right: 4px;
     }
 
     .tag-chip {
@@ -682,6 +692,7 @@
       display: flex;
       flex-direction: column;
       height: 100%;
+      min-height: 0;
       overflow: hidden;
       box-shadow: var(--shadow-sm);
     }
@@ -707,6 +718,7 @@
       flex: 1;
       padding: 20px;
       overflow-y: auto;
+      min-height: 0;
       display: flex;
       flex-direction: column;
       gap: 16px;
@@ -1262,7 +1274,10 @@
       padding: 20px;
       text-align: center;
       font-size: 0.82rem;
-      margin-top: auto;
+      margin-top: 32px;
+      position: relative;
+      z-index: 5;
+      clear: both;
     }
 
     footer a {
@@ -1562,7 +1577,7 @@
 
           <div>
             <h4>Image Context</h4>
-            <div id="chatImageContextStatus" style="font-size: 0.8rem; background: var(--c-papyrus-card); padding: 8px; border-radius: 4px; border: 1px solid var(--c-limestone);">
+            <div id="chatImageContextStatus" style="font-size: 0.8rem; background: var(--c-papyrus-card); padding: 8px; border-radius: 4px; border: 1px solid var(--c-limestone); max-height: 110px; overflow-y: auto; word-break: break-word; line-height: 1.4;">
               No detector results attached yet.
             </div>
           </div>
